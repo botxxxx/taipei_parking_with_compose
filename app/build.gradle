@@ -1,9 +1,14 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
     id 'kotlin-android'
     id 'kotlin-kapt'
 }
+
+static def getVersionCode() { return 1 }
+
+static def getVersionName() { return "0.0.1" + new Date().format('MMddHH') }
 
 android {
     namespace 'com.example.parking'
@@ -13,12 +18,10 @@ android {
         applicationId "com.example.parking"
         minSdk 29
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
-
+        versionCode getVersionCode()
+        versionName getVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -32,36 +35,36 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    dataBinding{
-        enabled = true
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
     }
 }
 
 dependencies {
-
+    // base
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.8.0'
     // lifecycle
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
     // room
-    kapt "androidx.room:room-compiler:2.5.0"
+    kapt 'androidx.room:room-compiler:2.5.0'
     // dagger
-    kapt "com.google.dagger:hilt-android-compiler:2.44"
+    kapt 'com.google.dagger:hilt-android-compiler:2.44'
     implementation 'com.google.dagger:hilt-android:2.44'
     // network
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11"
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    // moshi
-    implementation "com.squareup.moshi:moshi-kotlin:1.9.3"
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.2'
-
-    // Testing dependencies
-    testImplementation 'junit:junit:4.13.2'
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    // testing
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

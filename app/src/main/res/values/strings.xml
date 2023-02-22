@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">parking</string>
+    <string name="common_text_hint">提示</string>
+    <string name="common_text_sure">確定</string>
+    <string name="common_text_cancel">取消</string>
+    <string name="common_text_next">下一步</string>
+    <string name="common_text_i_know_it">我知道了</string>
+    <string name="common_text_success">成功</string>
+    <string name="common_text_fail">失敗</string>
+    <string name="common_text_error_msg">錯誤訊息</string>
+    <string name="common_text_error_content">目前網路連線不穩</string>
+    <string name="common_text_unknown_fail">發生未預期的錯誤</string>
+    <string name="common_login_failure">登入失敗</string>
 </resources>
