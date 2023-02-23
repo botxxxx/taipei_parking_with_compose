@@ -10,14 +10,11 @@ import com.example.parking.api.NetworkService
 import com.example.parking.api.model.LOGIN_001_Rq
 import com.example.parking.databinding.FragmentMainBinding
 import com.example.parking.fragment.BaseViewBindingFragment
+import com.example.parking.utils.ActivityUtils
 import com.example.parking.utils.DialogUtils
 import com.example.parking.widget.TextInputLayout
 
 class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
 
     private lateinit var viewModel: MainViewModel
 
@@ -64,11 +61,11 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
     }
 
     private fun onServiceAPISuccess() {
-        DialogUtils.showNormalAlert(
-            context = context,
-            title = resources.getString(R.string.common_text_hint),
-            msg = resources.getString(R.string.common_text_success),
-            rightButtonText = resources.getString(R.string.common_text_i_know_it),
+        ActivityUtils.replaceFragment(
+            parentFragmentManager,
+            R.id.container,
+            EntryFragment.newInstance(),
+            EntryFragment::class.simpleName
         )
     }
 
@@ -80,12 +77,12 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
             rightButtonText = resources.getString(R.string.common_text_i_know_it),
         )
     }
-//
-//    override fun getRootView(): View? {
-//        return view
-//    }
 
     override fun bindingCallback(): (LayoutInflater, ViewGroup?) -> FragmentMainBinding = { layoutInflater, viewGroup ->
         FragmentMainBinding.inflate(layoutInflater, viewGroup, false)
+    }
+
+    companion object {
+        fun newInstance() = MainFragment()
     }
 }
