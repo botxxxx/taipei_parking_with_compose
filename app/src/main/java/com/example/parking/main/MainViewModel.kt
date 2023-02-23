@@ -18,22 +18,22 @@ class MainViewModel : ViewModel() {
     fun clearResponse() {
         userLiveData.value = null
         onFailureLiveData.value = null
+        Loading.hide()
     }
 
-    fun getServiceStateList(baseViewInterface: BaseViewInterface, login: LOGIN_001_Rq) {
+    fun getServiceStateList(login: LOGIN_001_Rq, baseViewInterface: BaseViewInterface) {
         clearResponse()
+        Log.e("request", "$login")
         Loading.show(baseViewInterface.getRootView())
         NetworkService.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(baseViewInterface) {
             override fun onResponse(response: LOGIN_001_Rs) {
                 Log.e("response", "success")
                 userLiveData.postValue(response)
-                Loading.hide()
             }
 
             override fun onFailure() {
                 Log.e("response", "fail")
                 onFailureLiveData.postValue(BaseModel())
-                Loading.hide()
             }
         })
     }

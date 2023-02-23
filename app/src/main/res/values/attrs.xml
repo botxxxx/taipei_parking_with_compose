@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DBSTextInputLayout">
+        <attr name="android:text" />
+        <attr name="android:hint" />
+        <attr name="floatingTitle" format="string" />
+        <attr name="android:digits" />
+        <attr name="android:maxLength" />
+        <attr name="android:inputType" />
+        <attr name="android:imeOptions" />
+        <attr name="endIconDrawable" foramt="reference" />
+        <attr name="endIconTint" foramt="color" />
+        <attr name="errorIconDrawable" foramt="reference" />
+        <attr name="errorIconTint" foramt="color" />
+        <attr name="helperText" format="string" />
+        <attr name="android:clickable" format="boolean" />
+        <attr name="focusable" format="boolean" />
+        <attr name="android:enabled" />
+        <attr name="toDropDownListMode" format="boolean" />
+    </declare-styleable>
+</resources>

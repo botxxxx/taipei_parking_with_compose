@@ -10,7 +10,6 @@ import retrofit2.http.*
 import java.util.*
 
 interface ApiService {
-
     // 請參考下圖一頁面設計，實作一個登入頁面，讓使用者輸入下列帳號與密碼登入，並實作簡單 的格式驗證以及錯誤提示。
     // https://noodoe-app-development.web.app/api/login
     @Headers("X-Parse-Application-Id: vqYuKPOkLQLYHhk4QTGsGKFwATT4mBIGREI2m8eD")

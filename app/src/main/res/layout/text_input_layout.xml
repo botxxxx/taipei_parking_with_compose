@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingTop="3dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_layout"
+        style="@style/CommonTextInputWidgetStyle"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:imeOptions="actionDone"
+        app:errorEnabled="true"
+        app:errorIconDrawable="@null"
+        app:errorTextAppearance="@style/commonTextCaption"
+        app:helperTextTextAppearance="@style/commonTextCaption"
+        app:hintTextAppearance="@style/commonTextCaption"
+        tools:hint="身分證字號">
+
+        <com.example.parking.widget.TextInputEditText
+            android:id="@+id/tiet_edit_text"
+            style="@style/CommonTextInputEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="-11dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="2dp"
+            android:singleLine="true" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+</RelativeLayout>

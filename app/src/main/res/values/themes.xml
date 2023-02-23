@@ -2,15 +2,25 @@
     <!-- Base application theme. -->
     <style name="Theme.Parking" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/medium_green</item>
+        <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondary">@color/white</item>
+        <item name="colorSecondaryVariant">@color/black</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- check box color. -->
+        <item name="colorControlNormal">@color/limed_spruce</item>
+        <item name="colorControlActivated">@color/apple</item>
         <!-- Customize your theme here. -->
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogCircle</item>
+
+        <!-- Shadow -->
+        <item name="android:ambientShadowAlpha">0.5</item>
+        <item name="android:outlineAmbientShadowColor">@color/sl_cardview_shadow_start_color_heathe_50</item>
+        <item name="android:spotShadowAlpha">0</item>
     </style>
 </resources>

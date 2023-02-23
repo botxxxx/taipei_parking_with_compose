@@ -8,12 +8,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.parking.R
 import com.example.parking.api.NetworkService
 import com.example.parking.api.model.LOGIN_001_Rq
-import com.example.parking.callback.BaseViewInterface
 import com.example.parking.databinding.FragmentMainBinding
 import com.example.parking.fragment.BaseViewBindingFragment
 import com.example.parking.utils.DialogUtils
+import com.example.parking.widget.TextInputLayout
 
-class MainFragment : BaseViewBindingFragment<FragmentMainBinding>(), BaseViewInterface {
+class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
 
     companion object {
         fun newInstance() = MainFragment()
@@ -23,6 +23,10 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>(), BaseViewInt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         NetworkService.init()
+        setView()
+    }
+
+    private fun setView() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java].apply {
             userLiveData.observe(viewLifecycleOwner) {
                 it?.let {
@@ -36,7 +40,26 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>(), BaseViewInt
                     clearResponse()
                 }
             }
-            this.getServiceStateList(this@MainFragment, LOGIN_001_Rq())
+        }
+        binding.apply {
+            mbtnLogin.setOnClickListener {
+                viewModel.getServiceStateList(LOGIN_001_Rq(tilUser.text, tilPwd.text), this@MainFragment)
+            }
+            tilPwd.setEndIconOnClickListener(object : TextInputLayout.EndIconOnClickCallback {
+                override fun onClick(til: TextInputLayout, view: View) {
+                    val inputTypeStateSwitchTo = when (til.getInputType()) {
+                        TextInputLayout.INPUT_TYPE_TEXT_PASSWORD_MASK -> {
+                            Pair(TextInputLayout.INPUT_TYPE_TEXT_PASSWORD, R.drawable.ic_eye_open_apple)
+                        }
+                        else -> Pair(TextInputLayout.INPUT_TYPE_TEXT_PASSWORD_MASK, R.drawable.ic_eye_close_apple)
+                    }
+                    val inputType = til.getTypeface() //保持隱碼為全型，避免被覆蓋
+                    til.setInputType(inputTypeStateSwitchTo.first)
+                    til.setCustomIcon(inputTypeStateSwitchTo.second)
+                    til.putCursorToTextTail()
+                    til.setTypeface(inputType)
+                }
+            })
         }
     }
 
@@ -57,6 +80,10 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>(), BaseViewInt
             rightButtonText = resources.getString(R.string.common_text_i_know_it),
         )
     }
+//
+//    override fun getRootView(): View? {
+//        return view
+//    }
 
     override fun bindingCallback(): (LayoutInflater, ViewGroup?) -> FragmentMainBinding = { layoutInflater, viewGroup ->
         FragmentMainBinding.inflate(layoutInflater, viewGroup, false)
