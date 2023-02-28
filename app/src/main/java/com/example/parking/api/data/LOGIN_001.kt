@@ -1,5 +1,6 @@
-package com.example.parking.api.model
+package com.example.parking.api.data
 
+import com.example.parking.api.model.BaseModel
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.Field
 

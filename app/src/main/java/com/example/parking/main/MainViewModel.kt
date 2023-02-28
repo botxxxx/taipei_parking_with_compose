@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.parking.api.NetworkService
 import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
-import com.example.parking.api.model.LOGIN_001_Rq
-import com.example.parking.api.model.LOGIN_001_Rs
+import com.example.parking.api.data.LOGIN_001_Rq
+import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.callback.BaseViewInterface
 import com.example.parking.utils.Loading
 

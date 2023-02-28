@@ -1,18 +1,12 @@
 package com.example.parking.activity
 
-import android.os.Bundle
-import com.example.parking.R
-import com.example.parking.main.MainFragment
+import com.example.parking.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : BaseCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : DBSBaseViewBindingActivity<ActivityMainBinding>() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance())
-                .commitNow()
-        }
+    override fun getViewBinding(): ActivityMainBinding {
+        return ActivityMainBinding.inflate(layoutInflater)
     }
 }

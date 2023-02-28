@@ -13,7 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 object DialogUtils {
 
     private const val NORMAL_DIALOG_WIDTH = 360
-    private const val OVERLAY_ALPHA = 0.408f
+    const val OVERLAY_ALPHA = 0.408f
 
     private var dialog: AlertDialog? = null
 

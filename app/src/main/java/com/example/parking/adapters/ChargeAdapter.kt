@@ -1,16 +1,29 @@
 package com.example.parking.adapters
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.parking.api.model.TCMSV_003_Rs
+import com.example.parking.api.data.Parking
+import com.example.parking.databinding.ChargeItemBinding
 
-class ChargeAdapter : BaseDataBindingAdapter<TCMSV_003_Rs>(ChargeDiffCallback()) {
+class ChargeAdapter : BaseDataBindingAdapter<Parking>(ChargeDiffCallback()) {
 
-    private class ChargeDiffCallback : DiffUtil.ItemCallback<TCMSV_003_Rs>() {
-        override fun areItemsTheSame(oldItem: TCMSV_003_Rs, newItem: TCMSV_003_Rs): Boolean {
+    override fun setViewHolder(binding: ChargeItemBinding): BaseDataBindingViewHolder<Parking> {
+        return ParkingViewHolder(binding)
+    }
+
+    private class ParkingViewHolder<T>(binding: ChargeItemBinding) : BaseDataBindingViewHolder<T>(binding) {
+        init {
+            binding.root.setOnClickListener {
+//                itemView.findFragment<EntryFragment>()navigateToDetail(binding.attr, it)
+            }
+        }
+    }
+
+    private class ChargeDiffCallback : DiffUtil.ItemCallback<Parking>() {
+        override fun areItemsTheSame(oldItem: Parking, newItem: Parking): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: TCMSV_003_Rs, newItem: TCMSV_003_Rs): Boolean {
+        override fun areContentsTheSame(oldItem: Parking, newItem: Parking): Boolean {
             return oldItem == newItem
         }
     }

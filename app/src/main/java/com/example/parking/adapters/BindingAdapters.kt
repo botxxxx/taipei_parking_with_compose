@@ -2,10 +2,10 @@ package com.example.parking.adapters
 
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.parking.api.model.TCMSV_003_Rs
+import com.example.parking.api.data.Parking
 
 @BindingAdapter("chargeItems")
-fun bindRecyclerViewWithDataItemList(recyclerView: RecyclerView, dataItemList: List<TCMSV_003_Rs>?) {
+fun bindRecyclerViewWithDataItemList(recyclerView: RecyclerView, dataItemList: List<Parking>?) {
     dataItemList?.let {
         recyclerView.adapter?.apply {
             when (this) {

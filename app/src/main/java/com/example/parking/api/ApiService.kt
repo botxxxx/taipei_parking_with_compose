@@ -1,6 +1,7 @@
 package com.example.parking.api
 
-import com.example.parking.api.model.LOGIN_001_Rs
+import com.example.parking.api.data.LOGIN_001_Rs
+import com.example.parking.api.data.UPDATE_001_Rs
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
@@ -19,6 +20,15 @@ interface ApiService {
         @Field("username") username: String = "hw001@noodoe.com",
         @Field("password") password: String = "homework",
     ): LOGIN_001_Rs
+
+    @Headers("X-Parse-Application-Id: vqYuKPOkLQLYHhk4QTGsGKFwATT4mBIGREI2m8eD")
+    @POST("api/users/{updatedAt}")
+    @FormUrlEncoded
+    suspend fun doUpdate(
+        @Path("updatedAt") updatedAt: String,
+        @Field("phone") phone: String?,
+        @Field("timezone") timezone: String?,
+    ): UPDATE_001_Rs
 
     companion object {
         private const val BASE_URL = "https://noodoe-app-development.web.app/"

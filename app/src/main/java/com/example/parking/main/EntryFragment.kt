@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.example.parking.R
 import com.example.parking.adapters.ChargeAdapter
+import com.example.parking.api.data.Parking
 import com.example.parking.databinding.FragmentEntryBinding
 import com.example.parking.fragment.BaseViewBindingFragment
 import com.example.parking.utils.DialogUtils
+import com.example.parking.utils.Loading
 
 class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
 
@@ -24,11 +26,16 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
             adapter = ChargeAdapter()
         }
         viewModel = ViewModelProvider(this)[EntryViewModel::class.java].apply {
-            chargeLiveData.observe(viewLifecycleOwner) {
+            parkingDescLiveData.observe(viewLifecycleOwner) {
                 it?.let {
-                    (binding.rvList.adapter as ChargeAdapter).submitList(it.data?.park)
                     onSuccess()
-                    clearResponse()
+                    Loading.hide()
+                }
+            }
+            parkingAvailableLiveData.observe(viewLifecycleOwner) {
+                it?.let {
+                    onSuccess()
+                    Loading.hide()
                 }
             }
             onFailureLiveData.observe(viewLifecycleOwner) {
@@ -37,17 +44,25 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
                     clearResponse()
                 }
             }
-            this.getJson(this@EntryFragment)
         }
+        viewModel.getJson(this@EntryFragment)
     }
 
     private fun onSuccess() {
-        DialogUtils.showNormalAlert(
-            context = context,
-            title = resources.getString(R.string.common_text_hint),
-            msg = resources.getString(R.string.common_text_success),
-            rightButtonText = resources.getString(R.string.common_text_i_know_it),
-        )
+        val parkingList: MutableList<Parking> = mutableListOf()
+        val descList = viewModel.parkingDescLiveData.value?.data?.park
+        val availableList = viewModel.parkingAvailableLiveData.value?.data?.park
+        if (descList != null && availableList != null) {
+            for (item in descList) {
+                for (check in availableList) {
+                    if (item.id == check.id) {
+                        parkingList.add(Parking(item.id, item.getDesc(), check.getAvl()))
+                        break
+                    }
+                }
+            }
+            (binding.rvList.adapter as ChargeAdapter).submitList(parkingList)
+        }
     }
 
     private fun onError() {
@@ -61,9 +76,5 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
 
     override fun bindingCallback(): (LayoutInflater, ViewGroup?) -> FragmentEntryBinding = { layoutInflater, viewGroup ->
         FragmentEntryBinding.inflate(layoutInflater, viewGroup, false)
-    }
-
-    companion object {
-        fun newInstance() = EntryFragment()
     }
 }

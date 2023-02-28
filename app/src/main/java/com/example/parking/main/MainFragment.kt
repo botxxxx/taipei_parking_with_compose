@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.NetworkService
-import com.example.parking.api.model.LOGIN_001_Rq
+import com.example.parking.api.data.LOGIN_001_Rq
+import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.databinding.FragmentMainBinding
 import com.example.parking.fragment.BaseViewBindingFragment
-import com.example.parking.utils.ActivityUtils
 import com.example.parking.utils.DialogUtils
 import com.example.parking.widget.TextInputLayout
 
@@ -27,7 +28,7 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java].apply {
             userLiveData.observe(viewLifecycleOwner) {
                 it?.let {
-                    onServiceAPISuccess()
+                    navigateToEntry(it, binding.root)
                     clearResponse()
                 }
             }
@@ -60,13 +61,9 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
         }
     }
 
-    private fun onServiceAPISuccess() {
-        ActivityUtils.replaceFragment(
-            parentFragmentManager,
-            R.id.container,
-            EntryFragment.newInstance(),
-            EntryFragment::class.simpleName
-        )
+    private fun navigateToEntry(result: LOGIN_001_Rs?, view: View) {
+        val direction = MainFragmentDirections.actionToEntry(result)
+        view.findNavController().navigate(direction)
     }
 
     private fun onServiceAPIError() {
@@ -80,9 +77,5 @@ class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
 
     override fun bindingCallback(): (LayoutInflater, ViewGroup?) -> FragmentMainBinding = { layoutInflater, viewGroup ->
         FragmentMainBinding.inflate(layoutInflater, viewGroup, false)
-    }
-
-    companion object {
-        fun newInstance() = MainFragment()
     }
 }
