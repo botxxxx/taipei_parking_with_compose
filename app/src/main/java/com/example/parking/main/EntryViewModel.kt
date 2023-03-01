@@ -21,6 +21,10 @@ class EntryViewModel : ViewModel() {
         parkingDescLiveData.value = null
         parkingAvailableLiveData.value = null
         onFailureLiveData.value = null
+        loadingHide()
+    }
+
+    fun loadingHide() {
         Loading.hide()
     }
 
@@ -66,6 +70,7 @@ class EntryViewModel : ViewModel() {
             override fun onResponse(response: UPDATE_001_Rs) {
                 Log.e("response", "success")
                 Log.e("response", "$response")
+                loadingHide()
             }
 
             override fun onFailure() {

@@ -4,9 +4,10 @@ import com.example.parking.api.model.BaseModel
 import com.google.gson.annotations.SerializedName
 
 data class UPDATE_001_Rq(
-    @field:SerializedName("updatedAt") val updatedAt: String,
-    @field:SerializedName("phone") val phone: String?,
-    @field:SerializedName("timezone") val timezone: String?,
+    val sessionToken: String?,
+    val objectId: String?,
+    val phone: String?,
+    val timezone: String?,
 ) : BaseModel()
 
 data class UPDATE_001_Rs(

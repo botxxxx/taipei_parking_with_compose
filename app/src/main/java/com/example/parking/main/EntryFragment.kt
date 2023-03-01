@@ -95,12 +95,13 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
     }
 
     override fun onTimeZoneChange(): (TimeZone) -> Unit {
-        return { timeZome->
-            args.login?.updatedAt?.let { id ->
-                val update = UPDATE_001_Rq(id, null, "${timeZome.name}")
-                viewModel.updateUser(update, this)
-                Log.e("update", "$timeZome")
-            } ?: Log.e("update", "Error")
+        return { timeZome ->
+            val sessionToken = args.login?.sessionToken
+            val objectId = args.login?.objectId
+            val updateAt = args.login?.updatedAt
+            val update = UPDATE_001_Rq(sessionToken, objectId, null, updateAt)
+            viewModel.updateUser(update, this)
+//            Log.e("update", "$timeZome")
         }
     }
 }

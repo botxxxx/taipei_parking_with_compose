@@ -22,10 +22,11 @@ interface ApiService {
     ): LOGIN_001_Rs
 
     @Headers("X-Parse-Application-Id: vqYuKPOkLQLYHhk4QTGsGKFwATT4mBIGREI2m8eD")
-    @POST("api/users/{updatedAt}")
+    @PUT("api/users/{objectId}")
     @FormUrlEncoded
     suspend fun doUpdate(
-        @Path("updatedAt") updatedAt: String,
+        @Header("X-Parse-Session-Token") sessionToken: String?,
+        @Path("objectId") objectId: String?,
         @Field("phone") phone: String?,
         @Field("timezone") timezone: String?,
     ): UPDATE_001_Rs

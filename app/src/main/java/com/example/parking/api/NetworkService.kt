@@ -38,7 +38,7 @@ object NetworkService {
         safeCoroutineScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
-                    val request = apiService.doUpdate(update.updatedAt, update.phone, update.timezone)
+                    val request = apiService.doUpdate(update.sessionToken, update.objectId, update.phone, update.timezone)
                     Log.e("request", "$request")
                     callback.getResponse(request)
                 }
