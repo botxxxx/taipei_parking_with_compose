@@ -1,5 +1,6 @@
 package com.example.parking.main
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,12 +22,13 @@ class ChooseDialog(private val handler: ChooseTimeZoneHandler) : BaseBottomSheet
         setEvent()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initView(handler: ChooseTimeZoneHandler) {
         val languageList = listOf(
             TimeZone.TW, TimeZone.CN, TimeZone.EN, TimeZone.JP, TimeZone.KO, TimeZone.ES, TimeZone.ID, TimeZone.TH, TimeZone.VI
         )
         binding.run {
-            tvEmail.text = "Email: ${handler.getEmail()}"
+            tvEmail.text = "電話: ${handler.getPhone()}"
             rvTime.adapter = ChooseTimeZoneAdapter(languageList, onItemClick = { langInfo ->
                 handler.onTimeZoneChange().invoke(langInfo)
                 dialog?.dismiss()

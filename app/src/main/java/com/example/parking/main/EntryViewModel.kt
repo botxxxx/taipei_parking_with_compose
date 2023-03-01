@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.parking.api.NetworkService
 import com.example.parking.api.data.AVL_001_Rs
 import com.example.parking.api.data.DESC_001_Rs
+import com.example.parking.api.data.UPDATE_001_Rq
+import com.example.parking.api.data.UPDATE_001_Rs
 import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
 import com.example.parking.callback.BaseViewInterface
@@ -44,12 +46,26 @@ class EntryViewModel : ViewModel() {
         })
     }
 
-
     private fun getAvailable(baseViewInterface: BaseViewInterface) {
         NetworkService.getParkingAvailableRequest(object : BaseCallBack<AVL_001_Rs>(baseViewInterface) {
             override fun onResponse(response: AVL_001_Rs) {
                 Log.e("response", "success")
                 parkingAvailableLiveData.postValue(response)
+            }
+
+            override fun onFailure() {
+                Log.e("response", "fail")
+                onFailureLiveData.postValue(BaseModel())
+            }
+        })
+    }
+
+     fun updateUser(update: UPDATE_001_Rq, baseViewInterface: BaseViewInterface) {
+        Loading.show(baseViewInterface.getRootView())
+        NetworkService.sendUserUpdate(update, object : BaseCallBack<UPDATE_001_Rs>(baseViewInterface) {
+            override fun onResponse(response: UPDATE_001_Rs) {
+                Log.e("response", "success")
+                Log.e("response", "$response")
             }
 
             override fun onFailure() {
