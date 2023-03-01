@@ -1,7 +1,6 @@
 package com.example.parking.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +51,23 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
                     clearResponse()
                 }
             }
+            updateLiveData.observe(viewLifecycleOwner) {
+                it?.let {
+                    onSuccessDialog()
+                    Loading.hide()
+                }
+            }
         }
         viewModel.getJson(this@EntryFragment)
+    }
+
+    private fun onSuccessDialog() {
+        DialogUtils.showNormalAlert(
+            context = context,
+            title = resources.getString(R.string.common_text_hint),
+            msg = resources.getString(R.string.common_text_success),
+            rightButtonText = resources.getString(R.string.common_text_i_know_it),
+        )
     }
 
     private fun onSuccess() {
@@ -101,7 +115,6 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
             val updateAt = args.login?.updatedAt
             val update = UPDATE_001_Rq(sessionToken, objectId, null, updateAt)
             viewModel.updateUser(update, this)
-//            Log.e("update", "$timeZome")
         }
     }
 }

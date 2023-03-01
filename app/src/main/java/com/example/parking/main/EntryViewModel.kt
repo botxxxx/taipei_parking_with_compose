@@ -16,15 +16,12 @@ import com.example.parking.utils.Loading
 class EntryViewModel : ViewModel() {
     val parkingDescLiveData: MutableLiveData<DESC_001_Rs?> = MutableLiveData()
     val parkingAvailableLiveData: MutableLiveData<AVL_001_Rs?> = MutableLiveData()
+    val updateLiveData: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
     val onFailureLiveData: MutableLiveData<BaseModel?> = MutableLiveData()
     fun clearResponse() {
         parkingDescLiveData.value = null
         parkingAvailableLiveData.value = null
         onFailureLiveData.value = null
-        loadingHide()
-    }
-
-    fun loadingHide() {
         Loading.hide()
     }
 
@@ -64,13 +61,13 @@ class EntryViewModel : ViewModel() {
         })
     }
 
-     fun updateUser(update: UPDATE_001_Rq, baseViewInterface: BaseViewInterface) {
-        Loading.show(baseViewInterface.getRootView())
+    fun updateUser(update: UPDATE_001_Rq, baseViewInterface: BaseViewInterface) {
+        updateLiveData.value = null
         NetworkService.sendUserUpdate(update, object : BaseCallBack<UPDATE_001_Rs>(baseViewInterface) {
             override fun onResponse(response: UPDATE_001_Rs) {
+                updateLiveData.postValue(response)
                 Log.e("response", "success")
                 Log.e("response", "$response")
-                loadingHide()
             }
 
             override fun onFailure() {
