@@ -24,11 +24,15 @@ data class Desc(
     @field:SerializedName("totalmotor") val totalmotor: String?,
     @field:SerializedName("totalbike") val totalbike: String?,
     @field:SerializedName("totalbus") val totalbus: String?,
-) : BaseModel()
+) : BaseModel() {
+    fun getTotalCar() = "汽車:$totalcar 機車:$totalmotor"
+}
 
 data class Available(
     @field:SerializedName("availablecar") val availablecar: String?,
     @field:SerializedName("availablemotor") val availablemotor: String?,
     @field:SerializedName("availablebus") val availablebus: String?,
     @field:SerializedName("ChargeStation") val ChargeStation: AVL_004_Rs?,
-)
+): BaseModel(){
+    fun getAvailableCar() = "汽車:$availablecar 機車:$availablemotor"
+}

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.parking.R
 import com.example.parking.adapters.ChargeAdapter
 import com.example.parking.api.data.Parking
@@ -29,13 +30,11 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
             parkingDescLiveData.observe(viewLifecycleOwner) {
                 it?.let {
                     onSuccess()
-                    Loading.hide()
                 }
             }
             parkingAvailableLiveData.observe(viewLifecycleOwner) {
                 it?.let {
                     onSuccess()
-                    Loading.hide()
                 }
             }
             onFailureLiveData.observe(viewLifecycleOwner) {
@@ -61,6 +60,7 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
                     }
                 }
             }
+            Loading.hide()
             (binding.rvList.adapter as ChargeAdapter).submitList(parkingList)
         }
     }
@@ -71,6 +71,9 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>() {
             title = resources.getString(R.string.common_text_error_msg),
             msg = resources.getString(R.string.common_text_unknown_fail),
             rightButtonText = resources.getString(R.string.common_text_i_know_it),
+            rightButtonListener = {
+                findNavController().popBackStack()
+            }
         )
     }
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="park"
             type="com.example.parking.api.data.Parking" />
@@ -38,62 +39,64 @@
             style="@style/commonTextCaption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="10dp"
             android:text="@{park.desc.name}"
             android:textColor="@color/aluminium"
-            app:layout_constraintEnd_toStartOf="@id/tv_sub_title"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_no"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="park.desc.name" />
 
         <TextView
-            android:id="@+id/tv_1"
+            android:id="@+id/tv_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="@{park.desc.summary}"
+            android:text="@{park.desc.address}"
             android:textColor="@color/color_text_oxford_blue"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="@id/tv_title"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            tools:text="地方媽媽農會\n013 國泰世華\n0000765493749966．歐陽○菲" />
+            tools:text="desc.address" />
 
         <TextView
             android:id="@+id/tv_sub_title"
             style="@style/commonTextCaption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="6dp"
             android:text="@string/item_phone_number"
             android:textColor="@color/aluminium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_title"
-            app:layout_constraintTop_toTopOf="@id/tv_title" />
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_address" />
 
         <TextView
             android:id="@+id/tv_sub_number"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="@{park.desc.tel}"
             android:textColor="@color/color_text_oxford_blue"
             android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="@id/tv_sub_title"
             app:layout_constraintTop_toBottomOf="@id/tv_sub_title"
-            tools:text="$15,000" />
+            tools:text="desc.tel" />
 
         <TextView
             android:id="@+id/tv_third_title"
             style="@style/commonTextCaption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/item_address"
+            android:layout_marginTop="6dp"
+            android:text="車位數量"
             android:textColor="@color/aluminium"
-            app:layout_constraintEnd_toEndOf="@id/tv_sub_title"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="@id/tv_sub_title"
             app:layout_constraintTop_toBottomOf="@id/tv_sub_number" />
 
@@ -102,16 +105,40 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:text="@{park.desc.getTotalCar()}"
+            android:textColor="@color/color_text_oxford_blue"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="@id/tv_third_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_third_title"
+            tools:text="汽車:0 機車:0" />
+
+        <TextView
+            android:id="@+id/tv_four_title"
+            style="@style/commonTextCaption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="可用車位"
+            android:textColor="@color/aluminium"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="@id/tv_sub_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_third_comment" />
+
+
+        <TextView
+            android:id="@+id/tv_four_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:paddingBottom="24dp"
-            android:text="@{park.desc.address}"
+            android:text="@{park.available.getAvailableCar()}"
             android:textColor="@color/color_text_oxford_blue"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="@id/tv_third_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_third_title"
-            tools:text="拿到年終了真是開心啊啊啊啊啊" />
+            app:layout_constraintTop_toBottomOf="@id/tv_four_title"
+            tools:text="汽車:0 機車:0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
