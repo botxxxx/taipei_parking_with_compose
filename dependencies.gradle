@@ -38,7 +38,7 @@ ext.v = [
         hiltVersion          : '2.44',
         hiltComposeNavigation: '1.0.0',
         // network
-        retrofitVersion       : '2.9.0',
+        retrofitVersion      : '2.9.0',
         okhttpVersion        : '5.0.0-alpha.11',
         // coroutines
         coroutinesVersion    : '1.6.4',
