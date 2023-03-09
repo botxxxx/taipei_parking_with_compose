@@ -12,7 +12,7 @@ ext.v = [
         // base
         androidCodeVersion   : '1.9.0',
         constraintlayout     : '2.1.4',
-        lifecycleVersion     : '2.5.1',
+        lifecycleVersion     : '2.6.0',
         // material
         materialVersion      : '1.8.0',
         // compose

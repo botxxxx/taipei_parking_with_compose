@@ -173,7 +173,7 @@ class TextInputLayout @JvmOverloads constructor(context: Context, attrs: Attribu
         binding.tietEditText.apply {
             setOnKeyListener { view, keyCode, keyEvent ->
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    false
+                    return@setOnKeyListener false
                 }
                 onKeyCallback?.onKey(view, keyCode, keyEvent) ?: false
             }
@@ -293,8 +293,8 @@ class TextInputLayout @JvmOverloads constructor(context: Context, attrs: Attribu
     // 這是為了讓既有的code不要修改而新增
     fun addTextChanged(textChangedFinished: (Editable) -> Unit) {
         val watcher = object : BaseTextWatcher() {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChangedFinished(editable: Editable) {
                 textChangedFinished(editable)
             }
@@ -404,7 +404,7 @@ class TextInputLayout @JvmOverloads constructor(context: Context, attrs: Attribu
     fun isError(): Boolean = binding.tilLayout.error?.isNotBlank() ?: false
 
     fun setErrMsgSingleLine(isErrMsgSingleLine: Boolean) {
-//        binding.tilLayout.findViewById<TextView>(R.id.textinput_error).isSingleLine = isErrMsgSingleLine
+        binding.tilLayout.findViewById<TextView>(R.id.tiet_edit_text).isSingleLine = isErrMsgSingleLine
     }
 
     override fun clearFocus() {
