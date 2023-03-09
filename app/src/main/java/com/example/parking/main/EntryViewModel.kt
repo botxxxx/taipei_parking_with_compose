@@ -3,7 +3,7 @@ package com.example.parking.main
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.parking.api.NetworkService
+import com.example.parking.api.EntryRepository
 import com.example.parking.api.data.AVL_001_Rs
 import com.example.parking.api.data.DESC_001_Rs
 import com.example.parking.api.data.UPDATE_001_Rq
@@ -12,8 +12,13 @@ import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
 import com.example.parking.callback.BaseViewInterface
 import com.example.parking.utils.Loading
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class EntryViewModel : ViewModel() {
+@HiltViewModel
+class EntryViewModel @Inject constructor(
+    private val repository: EntryRepository
+) : ViewModel() {
     val parkingDescLiveData: MutableLiveData<DESC_001_Rs?> = MutableLiveData()
     val parkingAvailableLiveData: MutableLiveData<AVL_001_Rs?> = MutableLiveData()
     val updateLiveData: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
@@ -34,7 +39,7 @@ class EntryViewModel : ViewModel() {
     }
 
     private fun getDesc(baseViewInterface: BaseViewInterface) {
-        NetworkService.getParkingDescRequest(object : BaseCallBack<DESC_001_Rs>(baseViewInterface) {
+        repository.getParkingDescRequest(object : BaseCallBack<DESC_001_Rs>(baseViewInterface) {
             override fun onResponse(response: DESC_001_Rs) {
                 Log.e("response", "success")
                 parkingDescLiveData.postValue(response)
@@ -48,7 +53,7 @@ class EntryViewModel : ViewModel() {
     }
 
     private fun getAvailable(baseViewInterface: BaseViewInterface) {
-        NetworkService.getParkingAvailableRequest(object : BaseCallBack<AVL_001_Rs>(baseViewInterface) {
+        repository.getParkingAvailableRequest(object : BaseCallBack<AVL_001_Rs>(baseViewInterface) {
             override fun onResponse(response: AVL_001_Rs) {
                 Log.e("response", "success")
                 parkingAvailableLiveData.postValue(response)
@@ -63,7 +68,7 @@ class EntryViewModel : ViewModel() {
 
     fun updateUser(update: UPDATE_001_Rq, baseViewInterface: BaseViewInterface) {
         updateLiveData.value = null
-        NetworkService.sendUserUpdate(update, object : BaseCallBack<UPDATE_001_Rs>(baseViewInterface) {
+        repository.sendUserUpdate(update, object : BaseCallBack<UPDATE_001_Rs>(baseViewInterface) {
             override fun onResponse(response: UPDATE_001_Rs) {
                 updateLiveData.postValue(response)
                 Log.e("response", "success")

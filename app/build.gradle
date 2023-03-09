@@ -7,71 +7,114 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-static def getVersionCode() { return 2 }
-
-static def getVersionName() { return "1.0.1" + new Date().format('MMddHH') }
+apply from: '../dependencies.gradle'
 
 android {
-    namespace 'com.example.parking'
-    compileSdk 33
-
+    namespace v.applicationId
+    compileSdk v.compileSdk
+    compileOptions {
+        sourceCompatibility v.javaVersion
+        targetCompatibility v.javaVersion
+    }
     defaultConfig {
-        applicationId "com.example.parking"
-        minSdk 29
-        targetSdk 33
-        versionCode getVersionCode()
-        versionName getVersionName()
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId v.applicationId
+        minSdk v.minSdk
+        targetSdk v.compileSdk
+        versionCode v.versionCode
+        versionName v.versionName
+        testInstrumentationRunner v.testRunner
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
     buildFeatures {
+        compose = true
         viewBinding = true
         dataBinding = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion v.composeCompiler
+    }
+    compileOptions {
+        sourceCompatibility v.javaVersion
+        targetCompatibility v.javaVersion
+    }
+    kotlinOptions {
+        jvmTarget = v.jvmTarget
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 }
 
 dependencies {
-    // base
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.8.0'
-    // kotlin_navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    // lifecycle
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.paging:paging-common-ktx:3.1.1'
-    implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
-    // room
-    kapt 'androidx.room:room-compiler:2.5.0'
-    // dagger
-    kapt 'com.google.dagger:hilt-android-compiler:2.44'
-    implementation 'com.google.dagger:hilt-android:2.44'
-    // network
-    implementation 'com.google.code.gson:gson:2.9.0'
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
-    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11"
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    // testing
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+// base
+    implementation "androidx.appcompat:appcompat:$v.activityVersion"
+    implementation "androidx.core:core-ktx:$v.androidCodeVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$v.constraintlayout"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$v.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$v.lifecycleVersion"
+    implementation "com.google.android.material:material:$v.materialVersion"
+// compose
+    implementation "androidx.activity:activity-compose:$v.activityVersion"
+    implementation "androidx.constraintlayout:constraintlayout-compose:$v.constraintVersion"
+    implementation "androidx.compose.ui:ui:$v.composeVersion"
+    implementation "androidx.compose.ui:ui-tooling-preview:$v.composeVersion"
+    implementation "androidx.compose.runtime:runtime:$v.composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$v.composeVersion"
+    implementation "androidx.compose.material:material:$v.composeMaterial"
+    implementation "androidx.compose.material:material-icons-extended:$v.composeMaterial"
+    implementation "androidx.compose.material3:material3:$v.composeMaterial3"
+// compose image loading
+    implementation "com.github.skydoves:landscapist-coil:$v.landscapistVersion"
+    implementation "com.github.skydoves:landscapist-animation:$v.landscapistVersion"
+    implementation "com.github.skydoves:landscapist-placeholder:$v.landscapistVersion"
+    implementation "com.github.skydoves:landscapist-palette:$v.landscapistVersion"
+// glide
+    kapt "com.github.bumptech.glide:compiler:$v.glideVersion"
+    implementation "com.github.bumptech.glide:glide:$v.glideVersion"
+// navigation
+    implementation "androidx.navigation:navigation-compose:$v.navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$v.navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$v.navigationVersion"
+// hilt
+    kapt "com.google.dagger:hilt-android-compiler:$v.hiltVersion"
+    implementation "com.google.dagger:hilt-android:$v.hiltVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:$v.hiltComposeNavigation"
+// startup
+    implementation "androidx.startup:startup-runtime:$v.startupVersion"
+// test-hilt
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$v.hiltVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$v.hiltVersion"
+// paging
+    implementation "androidx.paging:paging-common-ktx:$v.pagingVersion"
+    implementation "androidx.paging:paging-runtime-ktx:$v.pagingVersion"
+// room
+    kapt "androidx.room:room-compiler:$v.roomVersion"
+    implementation "androidx.room:room-ktx:$v.roomVersion"
+// network
+    implementation "com.google.code.gson:gson:$v.retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$v.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$v.retrofitVersion"
+    implementation "com.squareup.okhttp3:okhttp:$v.okhttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$v.okhttpVersion"
+// coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$v.coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$v.coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$v.coroutinesVersion"
+// test
+    testImplementation "junit:junit:$v.junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$v.androidxTestJunit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$v.androidxTestEspresso"
+// test-compose
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$v.composeVersion"
+    debugImplementation "androidx.compose.ui:ui-tooling:$v.composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$v.composeVersion"
 }
 
 // Allow references to generated code

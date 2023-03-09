@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.parking.R
@@ -17,10 +17,12 @@ import com.example.parking.databinding.FragmentEntryBinding
 import com.example.parking.fragment.BaseViewBindingFragment
 import com.example.parking.utils.DialogUtils
 import com.example.parking.utils.Loading
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTimeZoneHandler {
 
-    private lateinit var viewModel: EntryViewModel
+    private val viewModel: EntryViewModel by viewModels()
     private val args: EntryFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,7 +36,7 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
         binding.mbtnTime.setOnClickListener {
             ChooseDialog(this).show(this.parentFragmentManager, null)
         }
-        viewModel = ViewModelProvider(this)[EntryViewModel::class.java].apply {
+        viewModel.apply {
             parkingDescLiveData.observe(viewLifecycleOwner) {
                 it?.let {
                     onSuccess()

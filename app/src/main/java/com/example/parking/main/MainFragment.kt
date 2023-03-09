@@ -4,28 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.parking.R
-import com.example.parking.api.NetworkService
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.databinding.FragmentMainBinding
 import com.example.parking.fragment.BaseViewBindingFragment
 import com.example.parking.utils.DialogUtils
 import com.example.parking.widget.TextInputLayout
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainFragment : BaseViewBindingFragment<FragmentMainBinding>() {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        NetworkService.init()
         setView()
     }
 
     private fun setView() {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java].apply {
+        viewModel.apply {
             userLiveData.observe(viewLifecycleOwner) {
                 it?.let {
                     navigateToEntry(it, binding.root)

@@ -20,21 +20,4 @@ interface JsonService {
 
     @GET("blobtcmsv/TCMSV_allavailable.json")
     suspend fun getParkingAvailable(): AVL_001_Rs
-
-    companion object {
-        private const val BASE_URL = "https://tcgbusfs.blob.core.windows.net/"
-        fun create(): JsonService {
-            val logger = HttpLoggingInterceptor().apply { level = Level.BASIC }
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .retryOnConnectionFailure(true)
-                .build()
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(JsonService::class.java)
-        }
-    }
 }

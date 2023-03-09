@@ -2,11 +2,6 @@ package com.example.parking.api
 
 import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.api.data.UPDATE_001_Rs
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Level
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.util.*
 
@@ -30,21 +25,4 @@ interface ApiService {
         @Field("phone") phone: String?,
         @Field("timezone") timezone: String?,
     ): UPDATE_001_Rs
-
-    companion object {
-        private const val BASE_URL = "https://noodoe-app-development.web.app/"
-        fun create(): ApiService {
-            val logger = HttpLoggingInterceptor().apply { level = Level.BASIC }
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .retryOnConnectionFailure(true)
-                .build()
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
-        }
-    }
 }
