@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor(
         clearResponse()
         Log.e("request", "$login")
         Loading.show(baseViewInterface.getRootView())
-        repository.sendLoginRequest(LOGIN_001_Rq(), object : BaseCallBack<LOGIN_001_Rs>(baseViewInterface) {
+        repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(baseViewInterface) {
             override fun onResponse(response: LOGIN_001_Rs) {
                 Log.e("response", "success")
                 userLiveData.postValue(response)
