@@ -64,6 +64,7 @@ dependencies {
     implementation "androidx.activity:activity-compose:$v.activityVersion"
     implementation "androidx.constraintlayout:constraintlayout-compose:$v.constraintVersion"
     implementation "androidx.compose.ui:ui:$v.composeVersion"
+    implementation "androidx.compose.ui:ui-viewbinding:$v.composeVersion"
     implementation "androidx.compose.ui:ui-tooling-preview:$v.composeVersion"
     implementation "androidx.compose.runtime:runtime:$v.composeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$v.composeVersion"
