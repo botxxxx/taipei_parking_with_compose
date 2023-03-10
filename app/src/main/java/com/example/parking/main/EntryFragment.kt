@@ -111,7 +111,7 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
     }
 
     override fun onTimeZoneChange(): (TimeZone) -> Unit {
-        return { timeZome ->
+        return { _ ->
             val sessionToken = args.login?.sessionToken
             val objectId = args.login?.objectId
             val updateAt = args.login?.updatedAt

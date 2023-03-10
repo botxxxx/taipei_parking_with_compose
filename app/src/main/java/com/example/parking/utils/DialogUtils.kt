@@ -18,9 +18,7 @@ object DialogUtils {
     private var dialog: AlertDialog? = null
 
     /**
-     *
      *  if only single btn set Text in neutralText.
-     *
      *  @param context Context
      *  @param iconRes res id default is R.drawable.ic_circle_call
      *  @param title alert title
