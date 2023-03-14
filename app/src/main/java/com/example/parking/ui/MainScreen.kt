@@ -1,6 +1,6 @@
 package com.example.parking.ui
 
-import android.view.View
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,14 +11,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.example.parking.R
+import com.example.parking.api.data.LOGIN_001_Rq
+import com.example.parking.api.data.LOGIN_001_Rs
+import com.example.parking.main.MainFragment
+import com.example.parking.main.MainFragmentDirections
+import com.example.parking.main.MainViewModel
+import com.example.parking.utils.ShowNormalAlert
 
 @Composable
-fun MainScreen(onClick: (View) -> (String, String) -> Unit) {
+fun MainScreen(fragment: MainFragment) {
+    val viewModel: MainViewModel = hiltViewModel()
+    SetView(fragment, viewModel)
     BasicsSurfaceView {
         val rootView = LocalView.current
-        ColumnEditText(onClick.invoke(rootView))
+        ColumnEditText { user, pwd ->
+            viewModel.getServiceStateList(LOGIN_001_Rq(), rootView)
+        }
     }
 }
 
@@ -58,9 +72,10 @@ fun OnboardScreen(btnClick: () -> Unit) {
     }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColumnEditText(onClick: (String, String) -> Unit) {
+fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
     var user by remember { mutableStateOf(TextFieldValue("")) }
     var pwd by remember { mutableStateOf(TextFieldValue("")) }
     Column(
@@ -89,4 +104,35 @@ fun ColumnEditText(onClick: (String, String) -> Unit) {
             Text("Login")
         }
     }
+}
+
+@Composable
+private fun SetView(fragment: MainFragment, viewModel: MainViewModel) {
+    viewModel.apply {
+        userLiveData.observe(fragment.viewLifecycleOwner) {
+            it?.let {
+                navigateToEntry(it, fragment.findNavController())
+                clearResponse()
+            }
+        }
+        onFailureLiveData.observe(fragment.viewLifecycleOwner) {
+            // TODO Composable
+//            onApiError()
+        }
+    }
+}
+
+private fun navigateToEntry(result: LOGIN_001_Rs?, navController: NavController) {
+    val direction = MainFragmentDirections.actionToEntry(result)
+    navController.navigate(direction)
+}
+
+@Composable
+private fun onApiError() {
+    val context = LocalContext.current
+    ShowNormalAlert(
+        title = context.getString(R.string.common_text_error_msg),
+        msg = context.getString(R.string.common_login_failure),
+        rightText = context.getString(R.string.common_text_i_know_it),
+    )
 }
