@@ -18,8 +18,7 @@ class EntryRepository @Inject constructor(
     private val jsonUrlApi = json.create(JsonService::class.java)
 
     fun sendUserUpdate(update: UPDATE_001_Rq, callback: BaseCallBack<UPDATE_001_Rs>) {
-        val safeCoroutineScope = callback.baseViewInterface.getLifeCycleScope()
-        safeCoroutineScope.launch(Dispatchers.IO) {
+        callback.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
                     val request = serviceApi.doUpdate(update.sessionToken, update.objectId, update.phone, update.timezone)
@@ -34,8 +33,7 @@ class EntryRepository @Inject constructor(
     }
 
     fun getParkingDescRequest(callback: BaseCallBack<DESC_001_Rs>) {
-        val safeCoroutineScope = callback.baseViewInterface.getLifeCycleScope()
-        safeCoroutineScope.launch(Dispatchers.IO) {
+        callback.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
                     val request = jsonUrlApi.getParkingDesc()
@@ -50,8 +48,7 @@ class EntryRepository @Inject constructor(
     }
 
     fun getParkingAvailableRequest(callback: BaseCallBack<AVL_001_Rs>) {
-        val safeCoroutineScope = callback.baseViewInterface.getLifeCycleScope()
-        safeCoroutineScope.launch(Dispatchers.IO) {
+        callback.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
                     val request = jsonUrlApi.getParkingAvailable()

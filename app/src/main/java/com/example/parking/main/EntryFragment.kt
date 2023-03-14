@@ -60,7 +60,7 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
                 }
             }
         }
-        viewModel.getJson(this@EntryFragment)
+        viewModel.getJson(binding.root)
     }
 
     private fun onSuccessDialog() {
@@ -116,7 +116,7 @@ class EntryFragment : BaseViewBindingFragment<FragmentEntryBinding>(), ChooseTim
             val objectId = args.login?.objectId
             val updateAt = args.login?.updatedAt
             val update = UPDATE_001_Rq(sessionToken, objectId, null, updateAt)
-            viewModel.updateUser(update, this)
+            viewModel.updateUser(update)
         }
     }
 }

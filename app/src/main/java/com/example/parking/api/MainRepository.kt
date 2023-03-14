@@ -15,8 +15,7 @@ class MainRepository @Inject constructor(@Named("Login") private val service: Re
     private val serviceApi = service.create(ApiService::class.java)
 
     fun sendLoginRequest(login: LOGIN_001_Rq, callback: BaseCallBack<LOGIN_001_Rs>) {
-        val safeCoroutineScope = callback.baseViewInterface.getLifeCycleScope()
-        safeCoroutineScope.launch(Dispatchers.IO) {
+        callback.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
                     val request = serviceApi.doLogin(login.user, login.pwd)

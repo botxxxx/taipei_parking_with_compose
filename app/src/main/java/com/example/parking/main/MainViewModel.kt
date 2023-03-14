@@ -1,14 +1,15 @@
 package com.example.parking.main
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.parking.api.MainRepository
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
-import com.example.parking.callback.BaseViewInterface
 import com.example.parking.utils.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -26,11 +27,11 @@ class MainViewModel @Inject constructor(
         Loading.hide()
     }
 
-    fun getServiceStateList(login: LOGIN_001_Rq, baseViewInterface: BaseViewInterface) {
+    fun getServiceStateList(login: LOGIN_001_Rq, rootView: View) {
         clearResponse()
         Log.e("request", "$login")
-        Loading.show(baseViewInterface.getRootView())
-        repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(baseViewInterface) {
+        Loading.show(rootView)
+        repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(viewModelScope) {
             override fun onResponse(response: LOGIN_001_Rs) {
                 Log.e("response", "success")
                 userLiveData.postValue(response)

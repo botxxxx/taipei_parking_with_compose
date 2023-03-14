@@ -1,19 +1,17 @@
 package com.example.parking.api.model
 
 import android.util.Log
-import com.example.parking.callback.BaseViewInterface
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-abstract class BaseCallBack<T>(val baseViewInterface: BaseViewInterface) {
+abstract class BaseCallBack<T>(val lifecycleScope: CoroutineScope) {
     /**
      * Reduce the chances of using GlobalScope, but also prevent normal function break down !!
      */
-    private val safeCoroutineScope = baseViewInterface.getLifeCycleScope()
-
     fun getResponse(response: T) {
         try {
-            safeCoroutineScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 onResponse(response)
             }
         } catch (ex: Exception) {
