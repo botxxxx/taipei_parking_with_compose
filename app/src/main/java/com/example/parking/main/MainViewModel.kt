@@ -18,12 +18,10 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
-    val userLiveData: MutableLiveData<LOGIN_001_Rs?> = MutableLiveData()
-    val onFailureLiveData: MutableLiveData<BaseModel?> = MutableLiveData()
+    val userData: MutableLiveData<LOGIN_001_Rs?> = MutableLiveData()
+    val onFailure: MutableLiveData<BaseModel?> = MutableLiveData()
 
     fun clearResponse() {
-        userLiveData.value = null
-        onFailureLiveData.value = null
         Loading.hide()
     }
 
@@ -34,12 +32,12 @@ class MainViewModel @Inject constructor(
         repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(viewModelScope) {
             override fun onResponse(response: LOGIN_001_Rs) {
                 Log.e("response", "success")
-                userLiveData.postValue(response)
+                userData.postValue(response)
             }
 
             override fun onFailure() {
                 Log.e("response", "fail")
-                onFailureLiveData.postValue(BaseModel())
+                onFailure.postValue(BaseModel())
             }
         })
     }

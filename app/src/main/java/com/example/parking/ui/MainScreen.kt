@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,23 +16,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
-import com.example.parking.main.MainFragment
 import com.example.parking.main.MainFragmentDirections
 import com.example.parking.main.MainViewModel
 import com.example.parking.utils.ShowNormalAlert
 
 @Composable
-fun MainScreen(fragment: MainFragment) {
+fun MainScreen() {
     val viewModel: MainViewModel = hiltViewModel()
-    SetView(fragment, viewModel)
+    SetState(viewModel)
     BasicsSurfaceView {
         val rootView = LocalView.current
         ColumnEditText { user, pwd ->
-            viewModel.getServiceStateList(LOGIN_001_Rq(), rootView)
+            viewModel.getServiceStateList(LOGIN_001_Rq(user, pwd), rootView)
         }
     }
 }
@@ -107,17 +107,16 @@ fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
 }
 
 @Composable
-private fun SetView(fragment: MainFragment, viewModel: MainViewModel) {
+private fun SetState(viewModel: MainViewModel) {
     viewModel.apply {
-        userLiveData.observe(fragment.viewLifecycleOwner) {
-            it?.let {
-                navigateToEntry(it, fragment.findNavController())
-                clearResponse()
-            }
+        userData.observeAsState().value?.let {
+            clearResponse()
+            val fragment = LocalView.current.findNavController()
+            navigateToEntry(it, fragment)
         }
-        onFailureLiveData.observe(fragment.viewLifecycleOwner) {
-            // TODO Composable
-//            onApiError()
+        onFailure.observeAsState().value?.let {
+            clearResponse()
+            OnApiError()
         }
     }
 }
@@ -128,7 +127,7 @@ private fun navigateToEntry(result: LOGIN_001_Rs?, navController: NavController)
 }
 
 @Composable
-private fun onApiError() {
+private fun OnApiError() {
     val context = LocalContext.current
     ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
