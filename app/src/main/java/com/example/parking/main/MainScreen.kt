@@ -1,8 +1,9 @@
-package com.example.parking.ui
+package com.example.parking.main
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,8 +21,8 @@ import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
-import com.example.parking.main.MainFragmentDirections
-import com.example.parking.main.MainViewModel
+import com.example.parking.ui.BasicsCodeLabTheme
+import com.example.parking.ui.lightColorPalette
 import com.example.parking.utils.ShowNormalAlert
 
 @Composable
@@ -31,7 +32,7 @@ fun MainScreen() {
     BasicsSurfaceView {
         val rootView = LocalView.current
         ColumnEditText { user, pwd ->
-            viewModel.getServiceStateList(LOGIN_001_Rq(user, pwd), rootView)
+            viewModel.getLogin(LOGIN_001_Rq(), rootView)
         }
     }
 }
@@ -41,7 +42,7 @@ fun BasicsSurfaceView(content: @Composable () -> Unit) {
     BasicsCodeLabTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = LightColorScheme.onPrimary
+            color = lightColorPalette.background
         ) {
             var shouldShowOnboard by rememberSaveable { mutableStateOf(true) }
             if (shouldShowOnboard) {
@@ -63,17 +64,17 @@ fun OnboardScreen(btnClick: () -> Unit) {
     ) {
         Text("Welcome to the " + context.getString(R.string.app_name) + "!", color = Color.Black)
         Button(
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier.padding(vertical = 24.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            colors = ButtonDefaults.buttonColors(contentColor = lightColorPalette.primary),
             onClick = btnClick,
         ) {
-            Text("Continue")
+            Text("Continue", color = lightColorPalette.background)
         }
     }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
     var user by remember { mutableStateOf(TextFieldValue("")) }
@@ -98,10 +99,12 @@ fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
             singleLine = true,
         )
         Button(
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier.padding(vertical = 24.dp),
+            colors = ButtonDefaults.buttonColors(contentColor = lightColorPalette.primary),
             onClick = { onClick.invoke(user.text, pwd.text) }
         ) {
-            Text("Login")
+            Text("Login", color = lightColorPalette.background)
         }
     }
 }

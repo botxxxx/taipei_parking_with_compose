@@ -33,6 +33,21 @@ data class Available(
     @field:SerializedName("availablemotor") val availablemotor: String?,
     @field:SerializedName("availablebus") val availablebus: String?,
     @field:SerializedName("ChargeStation") val ChargeStation: AVL_004_Rs?,
-): BaseModel(){
+) : BaseModel() {
     fun getAvailableCar() = "汽車:$availablecar 機車:$availablemotor"
+}
+
+object Park {
+    val mockDesc = Desc(
+        "area", "name", "", "",
+        "summary", "address", "tel",
+        "", "", "",
+        "car", "motor", "bike", "bus"
+    )
+    val mockAvailable = Available("car", "motor", "bus", null)
+    val mockParking = Parking(
+        id = "",
+        desc = mockDesc,
+        available = mockAvailable
+    )
 }

@@ -6,10 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.parking.api.EntryRepository
-import com.example.parking.api.data.AVL_001_Rs
-import com.example.parking.api.data.DESC_001_Rs
-import com.example.parking.api.data.UPDATE_001_Rq
-import com.example.parking.api.data.UPDATE_001_Rs
+import com.example.parking.api.data.*
 import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
 import com.example.parking.utils.Loading
@@ -22,19 +19,20 @@ class EntryViewModel @Inject constructor(
 ) : ViewModel() {
     val parkingDescLiveData: MutableLiveData<DESC_001_Rs?> = MutableLiveData()
     val parkingAvailableLiveData: MutableLiveData<AVL_001_Rs?> = MutableLiveData()
+    val parkingDetail: MutableLiveData<MutableList<Parking>> = MutableLiveData()
     val updateLiveData: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
     val onFailureLiveData: MutableLiveData<BaseModel?> = MutableLiveData()
     fun clearResponse() {
-        parkingDescLiveData.value = null
-        parkingAvailableLiveData.value = null
-        onFailureLiveData.value = null
+//        parkingDescLiveData.value = null
+//        parkingAvailableLiveData.value = null
+//        onFailureLiveData.value = null
         Loading.hide()
     }
 
     fun getJson(rootView: View) {
-        clearResponse()
+//        clearResponse()
         Log.e("request", "getJson()")
-        Loading.show(rootView)
+//        Loading.show(rootView)
         getDesc()
         getAvailable()
     }

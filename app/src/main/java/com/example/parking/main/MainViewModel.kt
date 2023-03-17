@@ -25,7 +25,7 @@ class MainViewModel @Inject constructor(
         Loading.hide()
     }
 
-    fun getServiceStateList(login: LOGIN_001_Rq, rootView: View) {
+    fun getLogin(login: LOGIN_001_Rq, rootView: View) {
         clearResponse()
         Log.e("request", "$login")
         Loading.show(rootView)
