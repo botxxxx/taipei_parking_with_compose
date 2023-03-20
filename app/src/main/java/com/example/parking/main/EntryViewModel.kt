@@ -22,17 +22,10 @@ class EntryViewModel @Inject constructor(
     val parkingDetail: MutableLiveData<MutableList<Parking>> = MutableLiveData()
     val updateLiveData: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
     val onFailureLiveData: MutableLiveData<BaseModel?> = MutableLiveData()
-    fun clearResponse() {
-//        parkingDescLiveData.value = null
-//        parkingAvailableLiveData.value = null
-//        onFailureLiveData.value = null
-        Loading.hide()
-    }
 
-    fun getJson(rootView: View) {
-//        clearResponse()
+    fun getJson(view: View) {
         Log.e("request", "getJson()")
-//        Loading.show(rootView)
+        Loading.show(view)
         getDesc()
         getAvailable()
     }

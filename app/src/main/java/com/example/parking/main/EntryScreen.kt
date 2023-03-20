@@ -6,24 +6,19 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +45,10 @@ fun EntryScreen() {
     BasicsCodeLabTheme {
         val viewModel: EntryViewModel = hiltViewModel()
         SetState(viewModel)
+        val view = LocalView.current
+        LaunchedEffect(Unit) {
+            viewModel.getJson(view)
+        }
     }
 }
 
@@ -82,22 +81,20 @@ fun Menu(parks: List<Parking> = List(50) { Park.mockParking }, scrollState: Scro
 fun BaseCardView(parking: Parking, scrollState: ScrollState) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     val scrollToPosition = remember { mutableStateOf(0F) }
-
-    val onClickCallback: () -> Unit = {
-        expanded.value = !expanded.value
-    }
-    BlueButtonRow(parking = parking, onClickCallback, expanded = expanded, scrollToPosition = scrollToPosition)
+    val onClick: () -> Unit = { expanded.value = !expanded.value }
+    BlueButtonRow(parking = parking, onClick, expanded = expanded, scrollToPosition = scrollToPosition)
 }
 
 @Composable
-fun BlueButtonRow(parking: Parking, callback: () -> Unit, expanded: MutableState<Boolean>, scrollToPosition: MutableState<Float>) {
+fun BlueButtonRow(parking: Parking, onClick: () -> Unit, expanded: MutableState<Boolean>, scrollToPosition: MutableState<Float>) {
     Surface(
         modifier = Modifier
             .padding(vertical = 2.dp)
             .onGloballyPositioned { coordinates ->
                 scrollToPosition.value = coordinates.positionInParent().y
             }
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick.invoke() },
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(2.dp, Color.Black),
         color = Color.White
@@ -111,8 +108,11 @@ fun BlueButtonRow(parking: Parking, callback: () -> Unit, expanded: MutableState
             )
         }
         ConstraintLayout(modifier = animationContentSize.invoke(Modifier.padding(10.dp))) {
-            val (title, address, image, content) = createRefs()
+            val (title, subTitle, image, content) = createRefs()
             val desc = parking.desc ?: Park.mockDesc
+            val subTitleText = if (expanded.value) parking.getAvailableCarExt() else parking.getAvailableCar()
+            val subTitleStyle = if (expanded.value) typography.h5 else LocalTextStyle.current
+            val expandIcon = if (expanded.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore
             Text(
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
@@ -123,45 +123,50 @@ fun BlueButtonRow(parking: Parking, callback: () -> Unit, expanded: MutableState
                 text = desc.name ?: "name",
                 style = typography.h4,
                 textAlign = TextAlign.Start,
-                color = Color.Black
+                color = Color.Black,
             )
             Text(
                 modifier = Modifier
-                    .constrainAs(address) {
+                    .constrainAs(subTitle) {
                         top.linkTo(title.bottom)
-                        start.linkTo(parent.start)
+                        start.linkTo(title.start)
+                        end.linkTo(title.end)
                         width = Dimension.fillToConstraints
                     },
-                text = desc.address ?: "address",
+                text = subTitleText,
+                style = subTitleStyle,
+                color = Color.Black,
             )
             IconButton(
                 modifier = Modifier.constrainAs(image) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 },
-                onClick = callback
+                onClick = {}
             ) {
-                val expandLess = Icons.Filled.ExpandLess
-                val expandMore = Icons.Filled.ExpandMore
                 Icon(
-                    imageVector = if (expanded.value) expandLess else expandMore,
+                    imageVector = expandIcon,
                     contentDescription = "",
-                    modifier = Modifier.padding(10.dp)
+                    tint = Color.Black,
                 )
             }
-            if (expanded.value) { //expanded.value
+            if (expanded.value) {
                 Column(
                     modifier = Modifier.constrainAs(content) {
-                        top.linkTo(address.bottom)
+                        top.linkTo(subTitle.bottom)
                         start.linkTo(parent.start)
                         bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                     }) {
                     Text(
-                        text = desc.summary ?: "summary",
+                        text = desc.getTelPhone(),
+                        style = typography.h5,
+                        color = Color.Black,
                     )
                     Text(
-                        text = desc.tel ?: "tel",
+                        text = desc.summary ?: "summary",
+                        style = typography.h6,
+                        color = Color.Black,
                     )
                 }
             }
@@ -183,13 +188,12 @@ private fun SetState(viewModel: EntryViewModel) {
             Loading.hide()
         }
         onFailureLiveData.observeAsState().value?.let {
-            clearResponse()
+            Loading.hide()
         }
         updateLiveData.observeAsState().value?.let {
             OnSuccessDialog()
             Loading.hide()
         }
-        getJson(LocalView.current)
     }
 }
 
@@ -219,6 +223,7 @@ private fun OnSuccess(viewModel: EntryViewModel) {
             }
         }
         viewModel.parkingDetail.postValue(parkingList)
+        Loading.hide()
     }
 }
 

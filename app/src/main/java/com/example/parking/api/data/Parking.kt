@@ -7,7 +7,18 @@ data class Parking(
     @field:SerializedName("id") val id: String = "001",
     val desc: Desc?,
     val available: Available?,
-) : BaseModel()
+) : BaseModel() {
+    private fun getCar() = if (!desc?.totalcar.equals("0")) {
+        "汽車: ${available?.availablecar}/${desc?.totalcar}"
+    } else ""
+
+    private fun getMotor() = if (!desc?.totalmotor.equals("0")) {
+        "\n機車: ${available?.availablemotor}/${desc?.totalmotor}"
+    } else ""
+
+    fun getAvailableCar() = "(可用/車位) ${getCar()} ${getMotor()}"
+    fun getAvailableCarExt() = "${getCar()}${getMotor()}"
+}
 
 data class Desc(
     @field:SerializedName("area") val area: String?,
@@ -25,7 +36,8 @@ data class Desc(
     @field:SerializedName("totalbike") val totalbike: String?,
     @field:SerializedName("totalbus") val totalbus: String?,
 ) : BaseModel() {
-    fun getTotalCar() = "汽車:$totalcar 機車:$totalmotor"
+    fun getTotalCar() = "汽車: $totalcar 機車: $totalmotor"
+    fun getTelPhone() = "電話: ${tel?.let { "02-$tel" } ?: "無"}"
 }
 
 data class Available(

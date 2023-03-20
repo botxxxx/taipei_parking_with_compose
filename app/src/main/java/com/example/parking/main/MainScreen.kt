@@ -32,7 +32,7 @@ fun MainScreen() {
     BasicsSurfaceView {
         val rootView = LocalView.current
         ColumnEditText { user, pwd ->
-            viewModel.getLogin(LOGIN_001_Rq(), rootView)
+            viewModel.getLogin(LOGIN_001_Rq(user, pwd), rootView)
         }
     }
 }
