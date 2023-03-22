@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,8 +16,11 @@ import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,15 +39,15 @@ import com.example.parking.R
 import com.example.parking.api.data.Park
 import com.example.parking.api.data.Parking
 import com.example.parking.ui.BasicsCodeLabTheme
-import com.example.parking.utils.DialogUtils
 import com.example.parking.utils.Loading
+import com.example.parking.utils.ShowNormalAlert
 
 @Composable
 fun EntryScreen() {
     BasicsCodeLabTheme {
+        val view = LocalView.current
         val viewModel: EntryViewModel = hiltViewModel()
         SetState(viewModel)
-        val view = LocalView.current
         LaunchedEffect(Unit) {
             viewModel.getJson(view)
         }
@@ -55,119 +57,121 @@ fun EntryScreen() {
 @Composable
 fun SetMenu(parks: List<Parking>) {
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+        modifier = Modifier.fillMaxSize(),
         color = Color.White
     ) {
-        val scrollState = rememberScrollState(1)
-        Menu(parks = parks, scrollState = scrollState)
+        val scrollState = rememberScrollState()
+        BaseAppBar(
+            arrowBackOnClick = { /*TODO*/ },
+            settingsOnClick = { /*TODO*/ },
+        ) {
+            Menu(parks = parks, scrollState = scrollState)
+        }
     }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun Menu(parks: List<Parking> = List(50) { Park.mockParking }, scrollState: ScrollState = rememberScrollState(1)) {
+fun Menu(parks: List<Parking> = List(50) { Park.mockParking }, scrollState: ScrollState = rememberScrollState()) {
     LazyColumn(
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.fillMaxHeight(),
     ) {
         items(items = parks) { parks ->
-            BaseCardView(parks, scrollState)
+            BaseCardView(parks)
         }
     }
 }
 
 @Composable
-fun BaseCardView(parking: Parking, scrollState: ScrollState) {
+fun BaseCardView(parking: Parking = Parking(desc = Park.mockDesc, available = Park.mockAvailable)) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     val scrollToPosition = remember { mutableStateOf(0F) }
     val onClick: () -> Unit = { expanded.value = !expanded.value }
-    BlueButtonRow(parking = parking, onClick, expanded = expanded, scrollToPosition = scrollToPosition)
-}
-
-@Composable
-fun BlueButtonRow(parking: Parking, onClick: () -> Unit, expanded: MutableState<Boolean>, scrollToPosition: MutableState<Float>) {
+    val animationContentSize: (Modifier) -> Modifier = {
+        it.animateContentSize(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
+            )
+        )
+    }
     Surface(
         modifier = Modifier
-            .padding(vertical = 2.dp)
+            .fillMaxWidth()
             .onGloballyPositioned { coordinates ->
                 scrollToPosition.value = coordinates.positionInParent().y
-            }
-            .fillMaxWidth()
-            .clickable { onClick.invoke() },
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(2.dp, Color.Black),
-        color = Color.White
+            },
+        color = Color.White,
     ) {
-        val animationContentSize: (Modifier) -> Modifier = {
-            it.animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .padding(5.dp)
+                .clickable { onClick.invoke() },
+            elevation = 2.dp,
+            backgroundColor = Color.White,
+            contentColor = MaterialTheme.colors.primary,
+            // border = BorderStroke(width = 1.dp, color = Color.Green),
+        ) {
+            ConstraintLayout(modifier = animationContentSize.invoke(Modifier.padding(10.dp))) {
+                val (title, subTitle, image, content) = createRefs()
+                val desc = parking.desc ?: Park.mockDesc
+                val subTitleText = if (expanded.value) parking.getAvailableCarExt() else parking.getAvailableCar()
+                val subTitleStyle = if (expanded.value) typography.h5 else LocalTextStyle.current
+                val expandIcon = if (expanded.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore
+                Text(
+                    modifier = Modifier.constrainAs(title) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(image.start)
+                        width = Dimension.fillToConstraints
+                    },
+                    text = desc.name ?: "name",
+                    style = typography.h4,
+                    textAlign = TextAlign.Start,
+                    color = Color.Black,
                 )
-            )
-        }
-        ConstraintLayout(modifier = animationContentSize.invoke(Modifier.padding(10.dp))) {
-            val (title, subTitle, image, content) = createRefs()
-            val desc = parking.desc ?: Park.mockDesc
-            val subTitleText = if (expanded.value) parking.getAvailableCarExt() else parking.getAvailableCar()
-            val subTitleStyle = if (expanded.value) typography.h5 else LocalTextStyle.current
-            val expandIcon = if (expanded.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore
-            Text(
-                modifier = Modifier.constrainAs(title) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(image.start)
-                    width = Dimension.fillToConstraints
-                },
-                text = desc.name ?: "name",
-                style = typography.h4,
-                textAlign = TextAlign.Start,
-                color = Color.Black,
-            )
-            Text(
-                modifier = Modifier
-                    .constrainAs(subTitle) {
+                Text(
+                    modifier = Modifier.constrainAs(subTitle) {
                         top.linkTo(title.bottom)
                         start.linkTo(title.start)
                         end.linkTo(title.end)
                         width = Dimension.fillToConstraints
                     },
-                text = subTitleText,
-                style = subTitleStyle,
-                color = Color.Black,
-            )
-            IconButton(
-                modifier = Modifier.constrainAs(image) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                },
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = expandIcon,
-                    contentDescription = "",
-                    tint = Color.Black,
+                    text = subTitleText,
+                    style = subTitleStyle,
+                    color = Color.Black,
                 )
-            }
-            if (expanded.value) {
-                Column(
-                    modifier = Modifier.constrainAs(content) {
+                IconButton(
+                    modifier = Modifier.constrainAs(image) {
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                    },
+                    onClick = { onClick.invoke() },
+                ) {
+                    Icon(
+                        imageVector = expandIcon,
+                        contentDescription = "",
+                        tint = Color.Black,
+                    )
+                }
+                if (expanded.value) {
+                    Column(modifier = Modifier.constrainAs(content) {
                         top.linkTo(subTitle.bottom)
                         start.linkTo(parent.start)
                         bottom.linkTo(parent.bottom)
                         width = Dimension.fillToConstraints
                     }) {
-                    Text(
-                        text = desc.getTelPhone(),
-                        style = typography.h5,
-                        color = Color.Black,
-                    )
-                    Text(
-                        text = desc.summary ?: "summary",
-                        style = typography.h6,
-                        color = Color.Black,
-                    )
+                        Text(
+                            text = desc.getTelPhone(),
+                            style = typography.h5,
+                            color = Color.Black,
+                        )
+                        Text(
+                            text = desc.summary ?: "summary",
+                            style = typography.h6,
+                            color = Color.Black,
+                        )
+                    }
                 }
             }
         }
@@ -188,6 +192,7 @@ private fun SetState(viewModel: EntryViewModel) {
             Loading.hide()
         }
         onFailureLiveData.observeAsState().value?.let {
+            OnError()
             Loading.hide()
         }
         updateLiveData.observeAsState().value?.let {
@@ -200,11 +205,10 @@ private fun SetState(viewModel: EntryViewModel) {
 @Composable
 private fun OnSuccessDialog() {
     val context = LocalContext.current
-    DialogUtils.showNormalAlert(
-        context = context,
+    ShowNormalAlert(
         title = context.getString(R.string.common_text_hint),
         msg = context.getString(R.string.common_text_success),
-        rightButtonText = context.getString(R.string.common_text_i_know_it),
+        rightText = context.getString(R.string.common_text_i_know_it),
     )
 }
 
@@ -231,13 +235,11 @@ private fun OnSuccess(viewModel: EntryViewModel) {
 private fun OnError() {
     val context = LocalContext.current
     val fragment = LocalView.current.findNavController()
-    DialogUtils.showNormalAlert(
-        context = context,
+    ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
         msg = context.getString(R.string.common_text_unknown_fail),
-        rightButtonText = context.getString(R.string.common_text_i_know_it),
-        rightButtonListener = {
+        rightText = context.getString(R.string.common_text_i_know_it),
+        rightClick = {
             fragment.popBackStack()
-        }
-    )
+        })
 }

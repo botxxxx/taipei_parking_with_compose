@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.Parking" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -10,17 +10,10 @@
         <item name="colorSecondaryVariant">@color/black</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >?attr/colorPrimary</item>
         <!-- check box color. -->
         <item name="colorControlNormal">@color/limed_spruce</item>
         <item name="colorControlActivated">@color/apple</item>
         <!-- Customize your theme here. -->
-
-        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogCircle</item>
-
-        <!-- Shadow -->
-        <item name="android:ambientShadowAlpha">0.5</item>
-        <item name="android:outlineAmbientShadowColor">@color/sl_cardview_shadow_start_color_heathe_50</item>
-        <item name="android:spotShadowAlpha">0</item>
     </style>
 </resources>

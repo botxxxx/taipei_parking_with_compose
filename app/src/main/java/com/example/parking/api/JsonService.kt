@@ -2,11 +2,6 @@ package com.example.parking.api
 
 import com.example.parking.api.data.AVL_001_Rs
 import com.example.parking.api.data.DESC_001_Rs
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import okhttp3.logging.HttpLoggingInterceptor.Level
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.util.*
 

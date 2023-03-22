@@ -1,7 +1,10 @@
 package com.example.parking.main
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -79,32 +82,34 @@ fun OnboardScreen(btnClick: () -> Unit) {
 fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
     var user by remember { mutableStateOf(TextFieldValue("")) }
     var pwd by remember { mutableStateOf(TextFieldValue("")) }
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.padding(5.dp),
-            value = user,
-            onValueChange = { user = it },
-            label = { Text(text = "user") },
-            singleLine = true,
-        )
-        OutlinedTextField(
-            modifier = Modifier.padding(5.dp),
-            value = pwd,
-            onValueChange = { pwd = it },
-            label = { Text(text = "pwd") },
-            singleLine = true,
-        )
-        Button(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.padding(vertical = 24.dp),
-            colors = ButtonDefaults.buttonColors(contentColor = lightColorPalette.primary),
-            onClick = { onClick.invoke(user.text, pwd.text) }
+    BaseAppBar {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Login", color = lightColorPalette.background)
+            OutlinedTextField(
+                modifier = Modifier.padding(5.dp),
+                value = user,
+                onValueChange = { user = it },
+                label = { Text(text = "user") },
+                singleLine = true,
+            )
+            OutlinedTextField(
+                modifier = Modifier.padding(5.dp),
+                value = pwd,
+                onValueChange = { pwd = it },
+                label = { Text(text = "pwd") },
+                singleLine = true,
+            )
+            Button(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(vertical = 24.dp),
+                colors = ButtonDefaults.buttonColors(contentColor = lightColorPalette.primary),
+                onClick = { onClick.invoke(user.text, pwd.text) }
+            ) {
+                Text("Login", color = lightColorPalette.background)
+            }
         }
     }
 }
@@ -119,7 +124,7 @@ private fun SetState(viewModel: MainViewModel) {
         }
         onFailure.observeAsState().value?.let {
             clearResponse()
-            OnApiError()
+            OnError()
         }
     }
 }
@@ -130,7 +135,7 @@ private fun navigateToEntry(result: LOGIN_001_Rs?, navController: NavController)
 }
 
 @Composable
-private fun OnApiError() {
+private fun OnError() {
     val context = LocalContext.current
     ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
