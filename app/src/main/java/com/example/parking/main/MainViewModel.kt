@@ -21,12 +21,8 @@ class MainViewModel @Inject constructor(
     val userData: MutableLiveData<LOGIN_001_Rs?> = MutableLiveData()
     val onFailure: MutableLiveData<BaseModel?> = MutableLiveData()
 
-    fun clearResponse() {
-        Loading.hide()
-    }
-
     fun getLogin(login: LOGIN_001_Rq, rootView: View) {
-        clearResponse()
+        Loading.hide()
         Log.e("request", "$login")
         Loading.show(rootView)
         repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(viewModelScope) {

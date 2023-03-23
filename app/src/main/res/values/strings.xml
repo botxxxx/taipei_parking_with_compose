@@ -9,6 +9,7 @@
     <string name="common_text_fail">失敗</string>
     <string name="common_text_error_msg">錯誤訊息</string>
     <string name="common_text_error_content">目前網路連線不穩</string>
+    <string name="common_text_error_content2">網路連線品質不佳</string>
     <string name="common_text_unknown_fail">發生未預期的錯誤</string>
     <string name="common_login_failure">登入失敗</string>
     <string name="common_edittext_must_not_empty_error">此為必填資料</string>

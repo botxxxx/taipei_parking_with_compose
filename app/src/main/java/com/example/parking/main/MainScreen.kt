@@ -19,14 +19,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.ui.BasicsCodeLabTheme
 import com.example.parking.ui.lightColorPalette
-import com.example.parking.utils.ShowNormalAlert
+import com.example.parking.utils.Loading
 
 @Composable
 fun MainScreen() {
@@ -118,28 +117,30 @@ fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
 private fun SetState(viewModel: MainViewModel) {
     viewModel.apply {
         userData.observeAsState().value?.let {
-            clearResponse()
-            val fragment = LocalView.current.findNavController()
-            navigateToEntry(it, fragment)
+            Loading.hide()
+            NavigateToEntry(it)
         }
         onFailure.observeAsState().value?.let {
-            clearResponse()
-            OnError()
+            Loading.hide()
+            OnError { onFailure.postValue(null) }
         }
     }
 }
 
-private fun navigateToEntry(result: LOGIN_001_Rs?, navController: NavController) {
+@Composable
+private fun NavigateToEntry(result: LOGIN_001_Rs?) {
     val direction = MainFragmentDirections.actionToEntry(result)
+    val navController = LocalView.current.findNavController()
     navController.navigate(direction)
 }
 
 @Composable
-private fun OnError() {
+private fun OnError(rightClick: () -> Unit) {
     val context = LocalContext.current
     ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
         msg = context.getString(R.string.common_login_failure),
         rightText = context.getString(R.string.common_text_i_know_it),
+        rightClick = rightClick
     )
 }

@@ -4,12 +4,10 @@ import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
@@ -34,13 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.Park
 import com.example.parking.api.data.Parking
+import com.example.parking.api.data.TimeZone
 import com.example.parking.ui.BasicsCodeLabTheme
 import com.example.parking.utils.Loading
-import com.example.parking.utils.ShowNormalAlert
 
 @Composable
 fun EntryScreen() {
@@ -57,33 +56,37 @@ fun EntryScreen() {
 @Composable
 fun SetMenu(parks: List<Parking>) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.White
+        modifier = Modifier.fillMaxSize(), color = Color.White
     ) {
-        val scrollState = rememberScrollState()
+        val navController = LocalView.current.findNavController()
         BaseAppBar(
-            arrowBackOnClick = { /*TODO*/ },
-            settingsOnClick = { /*TODO*/ },
+            arrowBackOnClick = { goBack(navController) },
+            settingsOnClick = { goBack(navController) },
         ) {
-            Menu(parks = parks, scrollState = scrollState)
+            Menu(parks = parks)
         }
     }
+}
+
+fun goBack(navController: NavController) {
+//    val direction = MainFragmentDirections.actionToEntry(result)
+//    val navController = LocalView.current.findNavController()
+//    navController.navigate(direction)
+    navController.popBackStack()
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun Menu(parks: List<Parking> = List(50) { Park.mockParking }, scrollState: ScrollState = rememberScrollState()) {
+fun Menu(parks: List<Parking> = List(50) { Park.mockParking }) {
     LazyColumn(
         modifier = Modifier.fillMaxHeight(),
     ) {
-        items(items = parks) { parks ->
-            BaseCardView(parks)
-        }
+        items(items = parks) { parks -> BaseCardView(parks) }
     }
 }
 
 @Composable
-fun BaseCardView(parking: Parking = Parking(desc = Park.mockDesc, available = Park.mockAvailable)) {
+fun BaseCardView(parking: Parking) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     val scrollToPosition = remember { mutableStateOf(0F) }
     val onClick: () -> Unit = { expanded.value = !expanded.value }
@@ -235,11 +238,24 @@ private fun OnSuccess(viewModel: EntryViewModel) {
 private fun OnError() {
     val context = LocalContext.current
     val fragment = LocalView.current.findNavController()
-    ShowNormalAlert(
-        title = context.getString(R.string.common_text_error_msg),
+    ShowNormalAlert(title = context.getString(R.string.common_text_error_msg),
         msg = context.getString(R.string.common_text_unknown_fail),
         rightText = context.getString(R.string.common_text_i_know_it),
         rightClick = {
             fragment.popBackStack()
         })
+}
+
+fun getPhone(): String {
+    return "未設定電話"
+}
+
+fun onTimeZoneChange(): (TimeZone) -> Unit {
+    return { _ ->
+//            val sessionToken = args.login?.sessionToken
+//            val objectId = args.login?.objectId
+//            val updateAt = args.login?.updatedAt
+//            val update = UPDATE_001_Rq(sessionToken, objectId, null, updateAt)
+//            viewModel.updateUser(update)
+    }
 }
