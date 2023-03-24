@@ -128,9 +128,10 @@ private fun SetState(viewModel: DetailViewModel) {
             Loading.hide()
             OnSuccess { updateUser.postValue(null) }
         }
+        val context = LocalContext.current
         onFailure.observeAsState().value?.let {
             Loading.hide()
-            OnError { onFailure.postValue(null) }
+            OnError(msg = context.getString(R.string.common_text_error_content)) { onFailure.postValue(null) }
         }
     }
 }

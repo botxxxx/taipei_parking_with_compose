@@ -120,9 +120,10 @@ private fun SetState(viewModel: MainViewModel) {
             Loading.hide()
             NavigateToEntry(it)
         }
+        val context = LocalContext.current
         onFailure.observeAsState().value?.let {
             Loading.hide()
-            OnError { onFailure.postValue(null) }
+            OnError(msg = context.getString(R.string.common_login_failure)) { onFailure.postValue(null) }
         }
     }
 }
@@ -135,11 +136,11 @@ private fun NavigateToEntry(result: LOGIN_001_Rs?) {
 }
 
 @Composable
-fun OnError(rightClick: () -> Unit) {
+fun OnError(msg: String, rightClick: () -> Unit) {
     val context = LocalContext.current
     ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
-        msg = context.getString(R.string.common_login_failure),
+        msg = msg,
         rightText = context.getString(R.string.common_text_i_know_it),
         rightClick = rightClick
     )

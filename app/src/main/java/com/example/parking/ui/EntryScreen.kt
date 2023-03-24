@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -216,7 +217,8 @@ private fun SetState(viewModel: EntryViewModel) {
         onFailure.observeAsState().value?.let {
             Loading.hide()
             val navController = LocalView.current.findNavController()
-            OnError { navController.popBackStack() }
+            val context = LocalContext.current
+            OnError(msg = context.getString(R.string.common_text_unknown_fail)) { navController.popBackStack() }
         }
     }
 }
