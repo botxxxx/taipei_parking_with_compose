@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.parking.api.EntryRepository
-import com.example.parking.api.data.*
+import com.example.parking.api.data.AVL_001_Rs
+import com.example.parking.api.data.DESC_001_Rs
+import com.example.parking.api.data.Parking
 import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
 import com.example.parking.utils.Loading
@@ -17,11 +19,10 @@ import javax.inject.Inject
 class EntryViewModel @Inject constructor(
     private val repository: EntryRepository
 ) : ViewModel() {
-    val parkingDescLiveData: MutableLiveData<DESC_001_Rs?> = MutableLiveData()
-    val parkingAvailableLiveData: MutableLiveData<AVL_001_Rs?> = MutableLiveData()
+    val parkingDesc: MutableLiveData<DESC_001_Rs?> = MutableLiveData()
+    val parkingAvailable: MutableLiveData<AVL_001_Rs?> = MutableLiveData()
     val parkingDetail: MutableLiveData<MutableList<Parking>> = MutableLiveData()
-    val updateLiveData: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
-    val onFailureLiveData: MutableLiveData<BaseModel?> = MutableLiveData()
+    val onFailure: MutableLiveData<BaseModel?> = MutableLiveData()
 
     fun getJson(view: View) {
         Log.e("request", "getJson()")
@@ -34,12 +35,12 @@ class EntryViewModel @Inject constructor(
         repository.getParkingDescRequest(object : BaseCallBack<DESC_001_Rs>(viewModelScope) {
             override fun onResponse(response: DESC_001_Rs) {
                 Log.e("response", "success")
-                parkingDescLiveData.postValue(response)
+                parkingDesc.postValue(response)
             }
 
             override fun onFailure() {
                 Log.e("response", "fail")
-                onFailureLiveData.postValue(BaseModel())
+                onFailure.postValue(BaseModel())
             }
         })
     }
@@ -48,28 +49,12 @@ class EntryViewModel @Inject constructor(
         repository.getParkingAvailableRequest(object : BaseCallBack<AVL_001_Rs>(viewModelScope) {
             override fun onResponse(response: AVL_001_Rs) {
                 Log.e("response", "success")
-                parkingAvailableLiveData.postValue(response)
+                parkingAvailable.postValue(response)
             }
 
             override fun onFailure() {
                 Log.e("response", "fail")
-                onFailureLiveData.postValue(BaseModel())
-            }
-        })
-    }
-
-    fun updateUser(update: UPDATE_001_Rq) {
-        updateLiveData.value = null
-        repository.sendUserUpdate(update, object : BaseCallBack<UPDATE_001_Rs>(viewModelScope) {
-            override fun onResponse(response: UPDATE_001_Rs) {
-                updateLiveData.postValue(response)
-                Log.e("response", "success")
-                Log.e("response", "$response")
-            }
-
-            override fun onFailure() {
-                Log.e("response", "fail")
-                onFailureLiveData.postValue(BaseModel())
+                onFailure.postValue(BaseModel())
             }
         })
     }

@@ -1,4 +1,4 @@
-package com.example.parking.main
+package com.example.parking.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.parking.R
-import com.example.parking.ui.BasicsCodeLabTheme
 
 @Composable
 fun BaseAppBar(
@@ -82,7 +81,7 @@ fun ShowNormalAlert(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 24.dp)
-                            .padding(horizontal = 20.dp)
+                            .padding(horizontal = 24.dp)
                     ) {
                         val (left, right) = createRefs()
                         if (leftText.isNotEmpty()) {

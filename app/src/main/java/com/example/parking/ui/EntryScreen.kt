@@ -1,4 +1,4 @@
-package com.example.parking.main
+package com.example.parking.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
@@ -24,21 +24,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.fragment.app.findFragment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.parking.R
 import com.example.parking.api.data.Park
 import com.example.parking.api.data.Parking
-import com.example.parking.api.data.TimeZone
-import com.example.parking.ui.BasicsCodeLabTheme
+import com.example.parking.main.EntryFragment
+import com.example.parking.main.EntryFragmentArgs
+import com.example.parking.main.EntryFragmentDirections
+import com.example.parking.main.EntryViewModel
 import com.example.parking.utils.Loading
 
 @Composable
@@ -53,40 +56,56 @@ fun EntryScreen() {
     }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun SetMenu(parks: List<Parking>) {
+private fun BasicsSurfaceView(parks: List<Parking> = List(50) { Park.mockParking }) {
     Surface(
         modifier = Modifier.fillMaxSize(), color = Color.White
     ) {
-        val navController = LocalView.current.findNavController()
+        val localView = LocalView.current
+        val navController = localView.findNavController()
+        val parentFragment = remember(localView) {
+            try {
+                localView.findFragment<EntryFragment>()
+            } catch (e: IllegalStateException) {
+                // findFragment throws if no parent fragment is found
+                null
+            }
+        }
+        val parentFragmentArgs = parentFragment?.navArgs<EntryFragmentArgs>()
         BaseAppBar(
             arrowBackOnClick = { goBack(navController) },
-            settingsOnClick = { goBack(navController) },
+            settingsOnClick = {
+                parentFragmentArgs?.let {
+                    goDetail(navController, it.value)
+                }
+            },
         ) {
-            Menu(parks = parks)
+            ParkingList(parks = parks)
         }
     }
 }
 
-fun goBack(navController: NavController) {
-//    val direction = MainFragmentDirections.actionToEntry(result)
-//    val navController = LocalView.current.findNavController()
-//    navController.navigate(direction)
-    navController.popBackStack()
+private fun goBack(navController: NavController) {
+    navController.navigate(R.id.main_fragment)
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+private fun goDetail(navController: NavController, args: EntryFragmentArgs) {
+    val direction = EntryFragmentDirections.actionToDetail(args.login)
+    navController.navigate(direction)
+}
+
 @Composable
-fun Menu(parks: List<Parking> = List(50) { Park.mockParking }) {
+private fun ParkingList(parks: List<Parking>) {
     LazyColumn(
         modifier = Modifier.fillMaxHeight(),
     ) {
-        items(items = parks) { parks -> BaseCardView(parks) }
+        items(items = parks) { parks -> EntryCardView(parks) }
     }
 }
 
 @Composable
-fun BaseCardView(parking: Parking) {
+private fun EntryCardView(parking: Parking) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     val scrollToPosition = remember { mutableStateOf(0F) }
     val onClick: () -> Unit = { expanded.value = !expanded.value }
@@ -184,42 +203,29 @@ fun BaseCardView(parking: Parking) {
 @Composable
 private fun SetState(viewModel: EntryViewModel) {
     viewModel.apply {
-        parkingDescLiveData.observeAsState().value?.let {
+        parkingDesc.observeAsState().value?.let {
             OnSuccess(viewModel)
         }
-        parkingAvailableLiveData.observeAsState().value?.let {
+        parkingAvailable.observeAsState().value?.let {
             OnSuccess(viewModel)
         }
         parkingDetail.observeAsState().value?.let {
-            SetMenu(it)
             Loading.hide()
+            BasicsSurfaceView(it)
         }
-        onFailureLiveData.observeAsState().value?.let {
-            OnError()
+        onFailure.observeAsState().value?.let {
             Loading.hide()
-        }
-        updateLiveData.observeAsState().value?.let {
-            OnSuccessDialog()
-            Loading.hide()
+            val navController = LocalView.current.findNavController()
+            OnError { navController.popBackStack() }
         }
     }
 }
 
 @Composable
-private fun OnSuccessDialog() {
-    val context = LocalContext.current
-    ShowNormalAlert(
-        title = context.getString(R.string.common_text_hint),
-        msg = context.getString(R.string.common_text_success),
-        rightText = context.getString(R.string.common_text_i_know_it),
-    )
-}
-
-@Composable
 private fun OnSuccess(viewModel: EntryViewModel) {
     val parkingList: MutableList<Parking> = mutableListOf()
-    val descList = viewModel.parkingDescLiveData.value?.data?.park
-    val availableList = viewModel.parkingAvailableLiveData.value?.data?.park
+    val descList = viewModel.parkingDesc.value?.data?.park
+    val availableList = viewModel.parkingAvailable.value?.data?.park
     if (descList != null && availableList != null) {
         for (item in descList) {
             for (check in availableList) {
@@ -231,31 +237,5 @@ private fun OnSuccess(viewModel: EntryViewModel) {
         }
         viewModel.parkingDetail.postValue(parkingList)
         Loading.hide()
-    }
-}
-
-@Composable
-private fun OnError() {
-    val context = LocalContext.current
-    val fragment = LocalView.current.findNavController()
-    ShowNormalAlert(title = context.getString(R.string.common_text_error_msg),
-        msg = context.getString(R.string.common_text_unknown_fail),
-        rightText = context.getString(R.string.common_text_i_know_it),
-        rightClick = {
-            fragment.popBackStack()
-        })
-}
-
-fun getPhone(): String {
-    return "未設定電話"
-}
-
-fun onTimeZoneChange(): (TimeZone) -> Unit {
-    return { _ ->
-//            val sessionToken = args.login?.sessionToken
-//            val objectId = args.login?.objectId
-//            val updateAt = args.login?.updatedAt
-//            val update = UPDATE_001_Rq(sessionToken, objectId, null, updateAt)
-//            viewModel.updateUser(update)
     }
 }

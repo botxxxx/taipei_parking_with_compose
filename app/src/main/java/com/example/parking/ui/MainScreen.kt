@@ -1,4 +1,4 @@
-package com.example.parking.main
+package com.example.parking.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
@@ -23,16 +23,17 @@ import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
-import com.example.parking.ui.BasicsCodeLabTheme
-import com.example.parking.ui.lightColorPalette
+import com.example.parking.main.MainFragmentDirections
+import com.example.parking.main.MainViewModel
 import com.example.parking.utils.Loading
 
 @Composable
 fun MainScreen() {
     val viewModel: MainViewModel = hiltViewModel()
+    val rootView = LocalView.current
+    val shouldShowOnboard = rememberSaveable { mutableStateOf(true) }
     SetState(viewModel)
-    BasicsSurfaceView {
-        val rootView = LocalView.current
+    BasicsSurfaceView(shouldShowOnboard) {
         ColumnEditText { user, pwd ->
             viewModel.getLogin(LOGIN_001_Rq(user, pwd), rootView)
         }
@@ -40,15 +41,14 @@ fun MainScreen() {
 }
 
 @Composable
-fun BasicsSurfaceView(content: @Composable () -> Unit) {
+private fun BasicsSurfaceView(shouldShowOnboard: MutableState<Boolean>, content: @Composable () -> Unit) {
     BasicsCodeLabTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = lightColorPalette.background
         ) {
-            var shouldShowOnboard by rememberSaveable { mutableStateOf(true) }
-            if (shouldShowOnboard) {
-                OnboardScreen { shouldShowOnboard = false }
+            if (shouldShowOnboard.value) {
+                OnboardScreen { shouldShowOnboard.value = false }
             } else {
                 content()
             }
@@ -57,7 +57,7 @@ fun BasicsSurfaceView(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun OnboardScreen(btnClick: () -> Unit) {
+private fun OnboardScreen(btnClick: () -> Unit) {
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +78,7 @@ fun OnboardScreen(btnClick: () -> Unit) {
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
+private fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
     var user by remember { mutableStateOf(TextFieldValue("")) }
     var pwd by remember { mutableStateOf(TextFieldValue("")) }
     BaseAppBar {
@@ -135,7 +135,7 @@ private fun NavigateToEntry(result: LOGIN_001_Rs?) {
 }
 
 @Composable
-private fun OnError(rightClick: () -> Unit) {
+fun OnError(rightClick: () -> Unit) {
     val context = LocalContext.current
     ShowNormalAlert(
         title = context.getString(R.string.common_text_error_msg),
