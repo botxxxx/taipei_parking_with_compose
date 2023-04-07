@@ -9,17 +9,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.findNavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
@@ -30,19 +27,19 @@ import com.example.parking.utils.Loading
 @Composable
 fun MainScreen() {
     val viewModel: MainViewModel = hiltViewModel()
-    val rootView = LocalView.current
-    val shouldShowOnboard = rememberSaveable { mutableStateOf(true) }
+    val isLoading: Boolean by viewModel.isLoading
+
     SetState(viewModel)
-    BasicsSurfaceView(shouldShowOnboard) {
-        ColumnEditText { user, pwd ->
-            viewModel.getLogin(LOGIN_001_Rq(user, pwd), rootView)
+    BasicsTheme(isLoading) { modifier ->
+        ColumnEditText(modifier) { user, pwd ->
+            viewModel.doLogin(LOGIN_001_Rq(user, pwd))
         }
     }
 }
 
 @Composable
 private fun BasicsSurfaceView(shouldShowOnboard: MutableState<Boolean>, content: @Composable () -> Unit) {
-    BasicsCodeLabTheme {
+    BasicsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = lightColorPalette.background
@@ -78,12 +75,12 @@ private fun OnboardScreen(btnClick: () -> Unit) {
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-private fun ColumnEditText(onClick: (String, String) -> Unit = { _, _ -> }) {
+private fun ColumnEditText(modifier: Modifier = Modifier, onClick: (String, String) -> Unit = { _, _ -> }) {
     var user by remember { mutableStateOf(TextFieldValue("")) }
     var pwd by remember { mutableStateOf(TextFieldValue("")) }
     BaseAppBar {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -131,17 +128,6 @@ private fun SetState(viewModel: MainViewModel) {
 @Composable
 private fun NavigateToEntry(result: LOGIN_001_Rs?) {
     val direction = MainFragmentDirections.actionToEntry(result)
-    val navController = LocalView.current.findNavController()
+    val navController = getNavController()
     navController.navigate(direction)
-}
-
-@Composable
-fun OnError(msg: String, rightClick: () -> Unit) {
-    val context = LocalContext.current
-    ShowNormalAlert(
-        title = context.getString(R.string.common_text_error_msg),
-        msg = msg,
-        rightText = context.getString(R.string.common_text_i_know_it),
-        rightClick = rightClick
-    )
 }

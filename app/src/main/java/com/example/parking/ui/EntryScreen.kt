@@ -14,11 +14,8 @@ import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,58 +28,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.fragment.app.findFragment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.parking.R
-import com.example.parking.api.data.Park
 import com.example.parking.api.data.Parking
+import com.example.parking.api.data.Parking.Companion.mock
 import com.example.parking.main.EntryFragment
 import com.example.parking.main.EntryFragmentArgs
 import com.example.parking.main.EntryFragmentDirections
 import com.example.parking.main.EntryViewModel
-import com.example.parking.utils.Loading
 
 @Composable
 fun EntryScreen() {
-    BasicsCodeLabTheme {
-        val view = LocalView.current
-        val viewModel: EntryViewModel = hiltViewModel()
-        SetState(viewModel)
-        LaunchedEffect(Unit) {
-            viewModel.getJson(view)
-        }
+    val viewModel: EntryViewModel = hiltViewModel()
+    val parkingList: List<Parking> by viewModel.parkingList.collectAsState(initial = listOf())
+    val isLoading: Boolean by viewModel.isLoading
+
+    SetState(viewModel)
+    BasicsTheme(isLoading) { modifier ->
+        BasicsSurfaceView(modifier, parkingList = parkingList)
     }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-private fun BasicsSurfaceView(parks: List<Parking> = List(50) { Park.mockParking }) {
+private fun BasicsSurfaceView(modifier: Modifier = Modifier, parkingList: List<Parking> = List(50) { mock() }) {
+    val navController = getNavController()
+    val fragmentArgs = getArgs<EntryFragment, EntryFragmentArgs>()
     Surface(
-        modifier = Modifier.fillMaxSize(), color = Color.White
+        modifier = modifier.fillMaxSize(), color = Color.White
     ) {
-        val localView = LocalView.current
-        val navController = localView.findNavController()
-        val parentFragment = remember(localView) {
-            try {
-                localView.findFragment<EntryFragment>()
-            } catch (e: IllegalStateException) {
-                // findFragment throws if no parent fragment is found
-                null
-            }
-        }
-        val parentFragmentArgs = parentFragment?.navArgs<EntryFragmentArgs>()
         BaseAppBar(
             arrowBackOnClick = { goBack(navController) },
             settingsOnClick = {
-                parentFragmentArgs?.let {
+                fragmentArgs?.let {
                     goDetail(navController, it.value)
                 }
             },
         ) {
-            ParkingList(parks = parks)
+            ParkingList(parkingList)
         }
     }
 }
@@ -97,11 +82,11 @@ private fun goDetail(navController: NavController, args: EntryFragmentArgs) {
 }
 
 @Composable
-private fun ParkingList(parks: List<Parking>) {
+private fun ParkingList(parkingList: List<Parking>) {
     LazyColumn(
         modifier = Modifier.fillMaxHeight(),
     ) {
-        items(items = parks) { parks -> EntryCardView(parks) }
+        items(items = parkingList) { parking -> EntryCardView(parking) }
     }
 }
 
@@ -137,8 +122,8 @@ private fun EntryCardView(parking: Parking) {
         ) {
             ConstraintLayout(modifier = animationContentSize.invoke(Modifier.padding(10.dp))) {
                 val (title, subTitle, image, content) = createRefs()
-                val desc = parking.desc ?: Park.mockDesc
-                val subTitleText = if (expanded.value) parking.getAvailableCarExt() else parking.getAvailableCar()
+                val desc = parking.getDesc()
+                val subTitleString = if (expanded.value) parking.getAvailableCarExt() else parking.getAvailableCar()
                 val subTitleStyle = if (expanded.value) typography.h5 else LocalTextStyle.current
                 val expandIcon = if (expanded.value) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore
                 Text(
@@ -160,7 +145,7 @@ private fun EntryCardView(parking: Parking) {
                         end.linkTo(title.end)
                         width = Dimension.fillToConstraints
                     },
-                    text = subTitleText,
+                    text = subTitleString,
                     style = subTitleStyle,
                     color = Color.Black,
                 )
@@ -204,40 +189,10 @@ private fun EntryCardView(parking: Parking) {
 @Composable
 private fun SetState(viewModel: EntryViewModel) {
     viewModel.apply {
-        parkingDesc.observeAsState().value?.let {
-            OnSuccess(viewModel)
-        }
-        parkingAvailable.observeAsState().value?.let {
-            OnSuccess(viewModel)
-        }
-        parkingDetail.observeAsState().value?.let {
-            Loading.hide()
-            BasicsSurfaceView(it)
-        }
         onFailure.observeAsState().value?.let {
-            Loading.hide()
             val navController = LocalView.current.findNavController()
             val context = LocalContext.current
             OnError(msg = context.getString(R.string.common_text_unknown_fail)) { navController.popBackStack() }
         }
-    }
-}
-
-@Composable
-private fun OnSuccess(viewModel: EntryViewModel) {
-    val parkingList: MutableList<Parking> = mutableListOf()
-    val descList = viewModel.parkingDesc.value?.data?.park
-    val availableList = viewModel.parkingAvailable.value?.data?.park
-    if (descList != null && availableList != null) {
-        for (item in descList) {
-            for (check in availableList) {
-                if (item.id == check.id) {
-                    parkingList.add(Parking(item.id, item.getDesc(), check.getAvl()))
-                    break
-                }
-            }
-        }
-        viewModel.parkingDetail.postValue(parkingList)
-        Loading.hide()
     }
 }

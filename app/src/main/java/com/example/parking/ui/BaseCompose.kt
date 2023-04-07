@@ -1,6 +1,5 @@
 package com.example.parking.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,13 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
+import androidx.navigation.NavArgs
+import androidx.navigation.NavArgsLazy
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.parking.R
 
 @Composable
 fun BaseAppBar(
+    appBar: String = LocalContext.current.getString(R.string.app_name),
     arrowBackOnClick: (() -> Unit)? = null,
     settingsOnClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit = {}
@@ -43,7 +50,7 @@ fun BaseAppBar(
             }
         }
         TopAppBar(
-            title = { Text(text = LocalContext.current.getString(R.string.app_name)) },
+            title = { Text(text = appBar, color = Color.White) },
             backgroundColor = MaterialTheme.colors.primarySurface,
             navigationIcon = arrowBack,
             actions = setting,
@@ -53,7 +60,6 @@ fun BaseAppBar(
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun ShowNormalAlert(
     iconRes: Int = R.drawable.ic_dialogs_bell,
@@ -64,13 +70,14 @@ fun ShowNormalAlert(
     rightText: String = LocalContext.current.getString(R.string.common_text_i_know_it),
     rightClick: () -> Unit = {},
 ) {
-    BasicsCodeLabTheme {
+    BasicsTheme {
         var dialogOpen by remember { mutableStateOf(true) }
         val onDismiss = { dialogOpen = false }
         if (dialogOpen) {
-            AlertDialog(modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
+            AlertDialog(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
                 shape = RoundedCornerShape(5.dp),
                 backgroundColor = Color.White,
                 onDismissRequest = {},
@@ -105,7 +112,7 @@ fun ShowNormalAlert(
 }
 
 @Composable
-fun GradientButton(
+private fun GradientButton(
     modifier: Modifier = Modifier,
     boxModifier: Modifier = Modifier.background(Color.White),
     text: String,
@@ -127,4 +134,34 @@ fun GradientButton(
             Text(text = text, color = Color.White)
         }
     }
+}
+
+@Composable
+fun OnError(msg: String, rightClick: () -> Unit) {
+    val context = LocalContext.current
+    ShowNormalAlert(
+        title = context.getString(R.string.common_text_error_msg),
+        msg = msg,
+        rightText = context.getString(R.string.common_text_i_know_it),
+        rightClick = rightClick
+    )
+}
+
+@Composable
+fun getNavController(): NavController {
+    return LocalView.current.findNavController()
+}
+
+@Composable
+inline fun <F : Fragment, reified Args : NavArgs> getArgs(): NavArgsLazy<Args>? {
+    val localView = LocalView.current
+    val parentFragment = remember(localView) {
+        try {
+            localView.findFragment<F>()
+        } catch (e: IllegalStateException) {
+            // findFragment throws if no parent fragment is found
+            null
+        }
+    }
+    return parentFragment?.navArgs()
 }

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.parking.api.EntryRepository
+import com.example.parking.api.DetailRepository
 import com.example.parking.api.data.UPDATE_001_Rq
 import com.example.parking.api.data.UPDATE_001_Rs
 import com.example.parking.api.model.BaseCallBack
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: EntryRepository
+    private val repository: DetailRepository
 ) : ViewModel() {
     val updateUser: MutableLiveData<UPDATE_001_Rs?> = MutableLiveData()
     val onFailure: MutableLiveData<BaseModel?> = MutableLiveData()

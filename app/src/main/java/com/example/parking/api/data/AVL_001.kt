@@ -14,13 +14,11 @@ data class AVL_002_Rs(
 
 data class AVL_003_Rs(
     @field:SerializedName("id") val id: String = "001",
-    @field:SerializedName("availablecar") val availablecar: String?,
-    @field:SerializedName("availablemotor") val availablemotor: String?,
-    @field:SerializedName("availablebus") val availablebus: String?,
+    @field:SerializedName("availablecar") val availablecar: String = "",
+    @field:SerializedName("availablemotor") val availablemotor: String = "",
+    @field:SerializedName("availablebus") val availablebus: String = "",
     @field:SerializedName("ChargeStation") val ChargeStation: AVL_004_Rs?,
-) : BaseModel() {
-    fun getAvl() = Available(availablecar, availablemotor, availablebus, ChargeStation)
-}
+) : BaseModel()
 
 data class AVL_004_Rs(
     @field:SerializedName("scoketStatusList") val scoketStatusList: List<DESC_005_Rs>?

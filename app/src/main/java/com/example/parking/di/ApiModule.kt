@@ -1,4 +1,4 @@
-package com.example.parking.api
+package com.example.parking.di
 
 import com.example.parking.api.data.*
 import dagger.Module

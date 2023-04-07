@@ -2,10 +2,7 @@ package com.example.parking.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,15 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.findFragment
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.parking.R
+import com.example.parking.api.data.LOGIN_001_Rs
 import com.example.parking.api.data.TimeZone
 import com.example.parking.api.data.UPDATE_001_Rq
 import com.example.parking.main.DetailFragment
@@ -41,43 +35,50 @@ import com.example.parking.utils.Loading
 
 @Composable
 fun DetailScreen() {
-    BasicsCodeLabTheme {
+    BasicsTheme {
+        val languageList = listOf(TimeZone.TW, TimeZone.CN, TimeZone.EN, TimeZone.JP, TimeZone.KO, TimeZone.ES, TimeZone.ID, TimeZone.TH, TimeZone.VI)
         val viewModel: DetailViewModel = hiltViewModel()
+
         SetState(viewModel)
-        val languageList = listOf(
-            TimeZone.TW, TimeZone.CN, TimeZone.EN, TimeZone.JP, TimeZone.KO, TimeZone.ES, TimeZone.ID, TimeZone.TH, TimeZone.VI
-        )
         BasicsSurfaceView(languageList, viewModel)
     }
 }
 
 @Composable
-private fun BasicsSurfaceView(timeZone: List<TimeZone>, viewModel: DetailViewModel) {
+private fun BasicsSurfaceView(timeZoneList: List<TimeZone>, viewModel: DetailViewModel) {
     Surface(
         modifier = Modifier.fillMaxSize(), color = Color.White
     ) {
-        val navController = LocalView.current.findNavController()
-        val args by LocalView.current.findFragment<DetailFragment>().navArgs<DetailFragmentArgs>()
+        val navController = getNavController()
+        val fragmentArgs = getArgs<DetailFragment, DetailFragmentArgs>()
         BaseAppBar(
-            arrowBackOnClick = { navController.navigate(R.id.entry_fragment) }
-        ) {
-            Items(timeZone, onTimeZoneChange(args, viewModel))
+            appBar = "基本資料",
+            arrowBackOnClick = { navController.navigate(R.id.entry_fragment) }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(9.dp),
+            ) {
+                Text(text = getPhone(fragmentArgs?.value?.login), color = Color.Black, style = typography.h6)
+                Text(text = "設定時區", color = Color.Black, style = typography.subtitle1)
+                Items(modifier = Modifier.padding(top = 5.dp), list = timeZoneList, onClick = onTimeZoneChange(fragmentArgs?.value?.login, viewModel))
+            }
         }
     }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun Items(list: List<TimeZone> = List(50) { TimeZone.TW }, onClick: (TimeZone) -> Unit = {}) {
-    LazyColumn(
-        modifier = Modifier.fillMaxHeight(),
-    ) {
-        items(items = list) { timeZone -> BaseCardView(timeZone, onClick) }
+private fun Items(modifier: Modifier = Modifier, list: List<TimeZone> = List(50) { TimeZone.TW }, onClick: (TimeZone) -> Unit = {}) {
+    LazyColumn(modifier = modifier.fillMaxHeight()) {
+        items(items = list) { timeZone ->
+            BaseCardView(timeZone, onClick)
+        }
     }
 }
 
 @Composable
-fun BaseCardView(timeZone: TimeZone, onClick: (TimeZone) -> Unit) {
+private fun BaseCardView(timeZone: TimeZone, onClick: (TimeZone) -> Unit) {
     val scrollToPosition = remember { mutableStateOf(0F) }
     Surface(
         modifier = Modifier
@@ -108,13 +109,13 @@ fun BaseCardView(timeZone: TimeZone, onClick: (TimeZone) -> Unit) {
     }
 }
 
-fun getPhone(): String {
-    return "未設定電話"
+private fun getPhone(login: LOGIN_001_Rs?): String {
+    return "電話: ${login?.phone ?: "未設定電話"}"
 }
 
-fun onTimeZoneChange(args: DetailFragmentArgs, viewModel: DetailViewModel): (TimeZone) -> Unit {
+private fun onTimeZoneChange(login: LOGIN_001_Rs?, viewModel: DetailViewModel): (TimeZone) -> Unit {
     return { timeZone ->
-        args.login?.apply {
+        login?.apply {
             val update = UPDATE_001_Rq(sessionToken, objectId, phone, timeZone.name)
             viewModel.updateUserData(update)
         }

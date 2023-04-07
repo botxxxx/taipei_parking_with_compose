@@ -70,7 +70,7 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$v.composeVersion"
     implementation "androidx.compose.material:material:$v.composeMaterial"
     implementation "androidx.compose.material:material-icons-extended:$v.composeMaterial"
-// compose image loading
+// github
     implementation "com.github.skydoves:landscapist-coil:$v.landscapistVersion"
     implementation "com.github.skydoves:landscapist-animation:$v.landscapistVersion"
     implementation "com.github.skydoves:landscapist-placeholder:$v.landscapistVersion"

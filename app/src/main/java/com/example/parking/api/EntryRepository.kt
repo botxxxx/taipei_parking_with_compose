@@ -1,63 +1,66 @@
 package com.example.parking.api
 
 import android.util.Log
+import androidx.annotation.WorkerThread
 import com.example.parking.api.data.*
-import com.example.parking.api.model.BaseCallBack
+import com.example.parking.db.ParkingDao
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 import retrofit2.Retrofit
 import javax.inject.Inject
 import javax.inject.Named
 
 class EntryRepository @Inject constructor(
-    @Named("Login") private val service: Retrofit,
-    @Named("Parking") private val json: Retrofit
+    @Named("Parking") private val json: Retrofit,
+    private val parkingDao: ParkingDao,
 ) {
-    private val serviceApi = service.create(ApiService::class.java)
     private val jsonUrlApi = json.create(JsonService::class.java)
 
-    fun sendUserUpdate(update: UPDATE_001_Rq, callback: BaseCallBack<UPDATE_001_Rs>) {
-        callback.lifecycleScope.launch(Dispatchers.IO) {
+    @WorkerThread
+    fun loadParking(onStart: () -> Unit, onCompletion: () -> Unit, onError: () -> Unit): Flow<List<Parking>> = flow {
+        val parking: List<Parking> = parkingDao.getParkingList()
+        if (parking.isEmpty()) {
             try {
-                withContext(Dispatchers.Main) {
-                    val request = serviceApi.doUpdate(update.sessionToken, update.objectId, update.phone, update.timezone)
-                    Log.e("request", "$request")
-                    callback.getResponse(request)
+                val descRS = jsonUrlApi.getParkingDesc()
+                val avlRs = jsonUrlApi.getParkingAvailable()
+                val parkingRs = getParkingFromResult(descRS, avlRs)
+                parkingDao.insertParkingList(parkingRs)
+                emit(parkingRs)
+            } catch (_: Exception) {
+                onError()
+            }
+        } else {
+            emit(parking)
+        }
+    }.onStart { onStart() }.onCompletion { onCompletion() }.flowOn(Dispatchers.IO)
+
+    private fun getParkingFromResult(descRs: DESC_001_Rs, avlRs: AVL_001_Rs): List<Parking> {
+        val parkingList: MutableList<Parking> = mutableListOf()
+        val descList = descRs.data?.park
+        val availableList = avlRs.data?.park
+        if (descList != null && availableList != null) {
+            for (desc in descList) {
+                for (available in availableList) {
+                    if (desc.id == available.id) {
+                        parkingList.add(getParking(desc, available))
+                        break
+                    }
                 }
-            } catch (ex: Exception) {
-                Log.e("error", "sendAppRequest fail: ${Log.getStackTraceString(ex)}")
-                callback.onFailure()
             }
         }
+        Log.e("parkingList", "$parkingList")
+        return parkingList
     }
 
-    fun getParkingDescRequest(callback: BaseCallBack<DESC_001_Rs>) {
-        callback.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                withContext(Dispatchers.Main) {
-                    val request = jsonUrlApi.getParkingDesc()
-                    Log.e("getParkingDescRequest", "$request")
-                    callback.getResponse(request)
-                }
-            } catch (ex: Exception) {
-                Log.e("getParkingDescRequest", "sendAppRequest fail: ${Log.getStackTraceString(ex)}")
-                callback.onFailure()
-            }
-        }
-    }
-
-    fun getParkingAvailableRequest(callback: BaseCallBack<AVL_001_Rs>) {
-        callback.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                withContext(Dispatchers.Main) {
-                    val request = jsonUrlApi.getParkingAvailable()
-                    Log.e("getParkingAvailableRequest", "$request")
-                    callback.getResponse(request)
-                }
-            } catch (ex: Exception) {
-                Log.e("getParkingAvailableRequest", "sendAppRequest fail: ${Log.getStackTraceString(ex)}")
-                callback.onFailure()
+    private fun getParking(desc: DESC_003_Rs, available: AVL_003_Rs): Parking {
+        desc.run {
+            available.run {
+                return Parking(
+                    id, area, name, type, type2,
+                    summary, address, tel, payex, tw97x, tw97y,
+                    totalcar, totalmotor, totalbike, totalbus,
+                    availablecar, availablemotor, availablebus
+                )
             }
         }
     }

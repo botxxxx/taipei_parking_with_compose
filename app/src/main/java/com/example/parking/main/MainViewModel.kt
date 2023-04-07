@@ -1,17 +1,19 @@
 package com.example.parking.main
 
 import android.util.Log
-import android.view.View
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.parking.api.MainRepository
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
-import com.example.parking.api.model.BaseCallBack
 import com.example.parking.api.model.BaseModel
-import com.example.parking.utils.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,21 +22,25 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val userData: MutableLiveData<LOGIN_001_Rs?> = MutableLiveData()
     val onFailure: MutableLiveData<BaseModel?> = MutableLiveData()
+    private val _isLoading: MutableState<Boolean> = mutableStateOf(false)
+    val isLoading: State<Boolean> get() = _isLoading
 
-    fun getLogin(login: LOGIN_001_Rq, rootView: View) {
-        Loading.hide()
-        Log.e("request", "$login")
-        Loading.show(rootView)
-        repository.sendLoginRequest(login, object : BaseCallBack<LOGIN_001_Rs>(viewModelScope) {
-            override fun onResponse(response: LOGIN_001_Rs) {
-                Log.e("response", "success")
-                userData.postValue(response)
+    fun doLogin(login: LOGIN_001_Rq) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.sendLoginRequest(
+                login,
+                onStart = { _isLoading.value = true },
+                onCompletion = {
+                    _isLoading.value = false
+                },
+                onError = {
+                    _isLoading.value = false
+                    onFailure.postValue(BaseModel())
+                    Log.e("error", "getLogin error")
+                }
+            ).collect {
+                userData.postValue(it)
             }
-
-            override fun onFailure() {
-                Log.e("response", "fail")
-                onFailure.postValue(BaseModel())
-            }
-        })
+        }
     }
 }
