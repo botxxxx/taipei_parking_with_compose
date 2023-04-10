@@ -60,10 +60,10 @@ private fun BasicsSurfaceView(modifier: Modifier = Modifier, parkingList: List<P
         modifier = modifier.fillMaxSize(), color = Color.White
     ) {
         BaseAppBar(
-            arrowBackOnClick = { goBack(navController) },
+            arrowBackOnClick = { navController.actionToMain() },
             settingsOnClick = {
-                fragmentArgs?.let {
-                    goDetail(navController, it.value)
+                fragmentArgs?.value?.let { login ->
+                    navController.actionToDetail(login)
                 }
             },
         ) {
@@ -72,13 +72,12 @@ private fun BasicsSurfaceView(modifier: Modifier = Modifier, parkingList: List<P
     }
 }
 
-private fun goBack(navController: NavController) {
-    navController.navigate(R.id.main_fragment)
+private fun NavController.actionToMain() {
+    navigate(EntryFragmentDirections.goMain())
 }
 
-private fun goDetail(navController: NavController, args: EntryFragmentArgs) {
-    val direction = EntryFragmentDirections.actionToDetail(args.login)
-    navController.navigate(direction)
+private fun NavController.actionToDetail(args: EntryFragmentArgs) {
+    navigate(EntryFragmentDirections.goDetail(args.login))
 }
 
 @Composable

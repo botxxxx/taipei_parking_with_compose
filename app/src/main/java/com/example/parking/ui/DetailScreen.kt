@@ -38,7 +38,6 @@ fun DetailScreen() {
     BasicsTheme {
         val languageList = listOf(TimeZone.TW, TimeZone.CN, TimeZone.EN, TimeZone.JP, TimeZone.KO, TimeZone.ES, TimeZone.ID, TimeZone.TH, TimeZone.VI)
         val viewModel: DetailViewModel = hiltViewModel()
-
         SetState(viewModel)
         BasicsSurfaceView(languageList, viewModel)
     }
@@ -53,7 +52,7 @@ private fun BasicsSurfaceView(timeZoneList: List<TimeZone>, viewModel: DetailVie
         val fragmentArgs = getArgs<DetailFragment, DetailFragmentArgs>()
         BaseAppBar(
             appBar = "基本資料",
-            arrowBackOnClick = { navController.navigate(R.id.entry_fragment) }) {
+            arrowBackOnClick = { navController.popBackStack() }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

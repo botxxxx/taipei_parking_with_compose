@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.parking.R
 import com.example.parking.api.data.LOGIN_001_Rq
 import com.example.parking.api.data.LOGIN_001_Rs
@@ -113,11 +114,12 @@ private fun ColumnEditText(modifier: Modifier = Modifier, onClick: (String, Stri
 @Composable
 private fun SetState(viewModel: MainViewModel) {
     viewModel.apply {
-        userData.observeAsState().value?.let {
-            Loading.hide()
-            NavigateToEntry(it)
-        }
         val context = LocalContext.current
+        val navController = getNavController()
+        userData.observeAsState().value?.let { login ->
+            Loading.hide()
+            navController.actionToEntry(login)
+        }
         onFailure.observeAsState().value?.let {
             Loading.hide()
             OnError(msg = context.getString(R.string.common_login_failure)) { onFailure.postValue(null) }
@@ -125,9 +127,6 @@ private fun SetState(viewModel: MainViewModel) {
     }
 }
 
-@Composable
-private fun NavigateToEntry(result: LOGIN_001_Rs?) {
-    val direction = MainFragmentDirections.actionToEntry(result)
-    val navController = getNavController()
-    navController.navigate(direction)
+private fun NavController.actionToEntry(result: LOGIN_001_Rs?) {
+    navigate(MainFragmentDirections.goEntry(result))
 }

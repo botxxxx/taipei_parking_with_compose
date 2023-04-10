@@ -7,18 +7,23 @@
         android:id="@+id/main_fragment"
         android:name="com.example.parking.main.MainFragment">
         <action
-            android:id="@+id/action_to_entry"
-            app:destination="@id/entry_fragment" />
+            android:id="@+id/go_entry"
+            app:destination="@id/entry_fragment"
+            app:restoreState="true" />
     </fragment>
 
     <fragment
         android:id="@+id/entry_fragment"
         android:name="com.example.parking.main.EntryFragment">
         <action
-            android:id="@+id/action_to_detail"
-            app:destination="@id/detail_fragment"
-            app:popUpTo="@+id/main_fragment"
+            android:id="@+id/go_main"
+            app:destination="@id/main_fragment"
+            app:popUpTo="@id/main_fragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/go_detail"
+            app:destination="@id/detail_fragment"
+            app:popUpToSaveState="true" />
         <argument
             android:name="login"
             android:defaultValue="@null"
