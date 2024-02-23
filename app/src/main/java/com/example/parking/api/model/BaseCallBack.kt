@@ -9,7 +9,7 @@ abstract class BaseCallBack<T>(val lifecycleScope: CoroutineScope) {
     /**
      * Reduce the chances of using GlobalScope, but also prevent normal function break down !!
      */
-    fun getResponse(response: T) {
+    internal fun getResponse(response: T) {
         try {
             lifecycleScope.launch(Dispatchers.IO) {
                 onResponse(response)

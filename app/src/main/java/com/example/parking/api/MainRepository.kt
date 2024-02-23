@@ -16,12 +16,7 @@ class MainRepository @Inject constructor(
     private val serviceApi = service.create(ApiService::class.java)
 
     @WorkerThread
-    fun sendLoginRequest(
-        login: LOGIN_001_Rq,
-        onStart: () -> Unit,
-        onCompletion: () -> Unit,
-        onError: () -> Unit
-    ): Flow<LOGIN_001_Rs> = flow {
+    fun sendLoginRequest(login: LOGIN_001_Rq, onStart: () -> Unit, onCompletion: () -> Unit, onError: () -> Unit): Flow<LOGIN_001_Rs> = flow {
         try {
             val request = serviceApi.doLogin(login.user, login.pwd)
             Log.e("request", "$request")

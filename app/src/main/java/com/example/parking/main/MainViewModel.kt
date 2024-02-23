@@ -30,9 +30,7 @@ class MainViewModel @Inject constructor(
             repository.sendLoginRequest(
                 login,
                 onStart = { _isLoading.value = true },
-                onCompletion = {
-                    _isLoading.value = false
-                },
+                onCompletion = { _isLoading.value = false },
                 onError = {
                     _isLoading.value = false
                     onFailure.postValue(BaseModel())

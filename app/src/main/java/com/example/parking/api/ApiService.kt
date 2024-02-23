@@ -12,8 +12,8 @@ interface ApiService {
     @POST("api/login")
     @FormUrlEncoded
     suspend fun doLogin(
-        @Field("username") username: String = "hw001@noodoe.com",
-        @Field("password") password: String = "homework",
+        @Field("username") username: String,
+        @Field("password") password: String,
     ): LOGIN_001_Rs
 
     @Headers("X-Parse-Application-Id: vqYuKPOkLQLYHhk4QTGsGKFwATT4mBIGREI2m8eD")

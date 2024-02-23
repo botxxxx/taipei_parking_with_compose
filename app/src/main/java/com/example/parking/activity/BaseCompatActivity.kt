@@ -35,26 +35,26 @@ abstract class BaseCompatActivity : AppCompatActivity() {
         activityReference?.clear()
     }
 
-    private val unregisterCallBack: () -> Unit = {
+    private val unRegisterCallBack: () -> Unit = {
         unregisterActivityLifecycleCallbacks(lifeCycleCallBack)
         activityReference?.clear()
         activityReference = null
     }
-    private val lifeCycleCallBack = ActivityLifeCycleCallBack(unregisterCallBack)
+    private val lifeCycleCallBack = ActivityLifeCycleCallBack(unRegisterCallBack)
 
     companion object {
         var activityReference: WeakReference<Activity?>? = null
     }
 }
 
-class ActivityLifeCycleCallBack(private val unregisterCallBack: (() -> Unit)) : Application.ActivityLifecycleCallbacks {
+internal class ActivityLifeCycleCallBack(private val unRegisterCallBack: (() -> Unit)) : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityCreated(p0: Activity, p1: Bundle?) {
         BaseCompatActivity.activityReference = WeakReference(p0)
     }
 
     override fun onActivityStarted(p0: Activity) {
-        unregisterCallBack.invoke()
+        unRegisterCallBack.invoke()
     }
 
     override fun onActivityResumed(p0: Activity) {}

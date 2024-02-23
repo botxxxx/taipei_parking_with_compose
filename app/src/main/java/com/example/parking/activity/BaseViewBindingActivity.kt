@@ -3,7 +3,7 @@ package com.example.parking.activity
 import android.os.Bundle
 import androidx.viewbinding.ViewBinding
 
-abstract class DBSBaseViewBindingActivity<B : ViewBinding> : BaseCompatActivity() {
+abstract class BaseViewBindingActivity<B : ViewBinding> : BaseCompatActivity() {
     lateinit var binding: B
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

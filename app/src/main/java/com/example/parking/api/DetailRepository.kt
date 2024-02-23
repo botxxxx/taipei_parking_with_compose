@@ -16,17 +16,22 @@ class DetailRepository @Inject constructor(
     private val serviceApi = service.create(ApiService::class.java)
 
     fun sendUserUpdate(update: UPDATE_001_Rq, callback: BaseCallBack<UPDATE_001_Rs>) {
-        callback.lifecycleScope.launch(Dispatchers.IO) {
-            try {
+        try {
+            callback.lifecycleScope.launch {
                 withContext(Dispatchers.Main) {
-                    val request = serviceApi.doUpdate(update.sessionToken, update.objectId, update.phone, update.timezone)
+                    val request = serviceApi.doUpdate(
+                        update.sessionToken,
+                        update.objectId,
+                        update.phone,
+                        update.timezone
+                    )
                     Log.e("request", "$request")
                     callback.getResponse(request)
                 }
-            } catch (ex: Exception) {
-                Log.e("error", "sendAppRequest fail: ${Log.getStackTraceString(ex)}")
-                callback.onFailure()
             }
+        } catch (ex: Exception) {
+            Log.e("error", "sendAppRequest fail: ${Log.getStackTraceString(ex)}")
+            callback.onFailure()
         }
     }
 }
